@@ -1,16 +1,28 @@
 name: heuristic-override-arena
-version: "1.0.0"
+version: "2.0.0"
 description: >
-  Heuristic Override Arena trains AI agents to override surface heuristics
-  when implicit constraints require it. Based on CMU research (arXiv:2603.29025)
-  showing LLMs follow heuristic shortcuts 8.7-38x more than actual goals.
-  Three real-world domains: procurement decisions, HR decisions, and medical triage.
-  Every scenario contains a trap: the obvious choice violates a constraint.
-  Zero other OpenEnv submissions address this documented failure mode.
+  Simulates real-world compliance-critical business decisions in procurement,
+  HR, medical triage, budget allocation, and vendor selection. Agents must
+  follow explicit policy constraints even when obvious shortcuts (cheaper,
+  faster, more familiar) are tempting but violate rules.
+  
+  Tasks include: vendor selection with certification requirements, hiring with
+  background checks, patient prioritization with protocol constraints, and
+  budget decisions with ROI policies. Based on documented AI failure modes
+  (arXiv:2603.29025) showing LLMs follow shortcuts 8.7-38x more than rules.
+  
+  Features:
+  - 100 real business scenarios across 5 domains
+  - Deterministic grading with partial credit for constraint identification
+  - Curriculum learning (easy → medium → hard progression)
+  - Per-bias performance analytics
+  - Multi-step episodes for stronger RL signal
 tags:
   - openenv
   - heuristic-override
   - reasoning
+  - cognitive-bias
+  - curriculum-learning
   - real-world
   - deterministic
 tasks:
@@ -19,21 +31,37 @@ tasks:
     description: >
       Vendor and resource selection decisions where cost/speed heuristics
       conflict with compliance, certification, or policy constraints.
+      25 scenarios covering cost, rating, and speed biases.
   - name: hr_decision
     difficulty: medium
     description: >
       Hiring, promotion, and staffing decisions where experience/performance
       heuristics conflict with legal, policy, or eligibility constraints.
+      25 scenarios covering experience, performance, and availability biases.
   - name: medical_triage
     difficulty: hard
     description: >
       Clinical decisions where severity/urgency heuristics conflict with
       contraindications, allergies, or protocol modifications.
+      25 scenarios covering severity, urgency, and proximity biases.
+  - name: cognitive_biases
+    difficulty: medium
+    description: >
+      Advanced cognitive bias scenarios including authority bias, sunk cost
+      fallacy, recency bias, familiarity bias, and social pressure.
+      15 scenarios designed to test deeper reasoning.
+  - name: edge_cases
+    difficulty: hard
+    description: >
+      High-stakes edge cases with strong conflicting signals: urgent deadlines
+      vs compliance, nepotism vs policy, speed vs security.
+      10 challenging scenarios with hard trap intensities.
 reward:
   min: 0.0
   max: 1.0
   type: continuous
   shaped: true
+  formula: "0.6×correct + 0.2×constraint_id + 0.2×heuristic_id − 0.3×trap_penalty"
 action_space:
   type: json
   description: >
@@ -42,5 +70,19 @@ action_space:
 observation_space:
   type: json
   description: >
-    task_type, scenario (context/question/options), 
-    feedback, cumulative_reward, episode_score
+    task_type, scenario (context/question/options/heuristic_signal), 
+    feedback, cumulative_reward, episode_score, trap_intensity
+curriculum:
+  levels:
+    - name: easy
+      tasks: [procurement]
+      trap_weight: 0.5
+      description: Basic cost/speed heuristics with clear constraints
+    - name: medium
+      tasks: [hr_decision, cognitive_biases]
+      trap_weight: 0.75
+      description: Mixed heuristics including social and cognitive biases
+    - name: hard
+      tasks: [medical_triage, edge_cases]
+      trap_weight: 1.0
+      description: High-stakes decisions with strong conflicting signals

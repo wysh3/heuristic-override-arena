@@ -64,3 +64,7 @@ class HOAState(State):
     task_scores: Dict[str, float] = Field(default_factory=dict)
     heuristic_trap_rate: float = 0.0
     # Fraction of scenarios where agent fell for the trap (lower = better)
+    difficulty: str = ""
+    # Current difficulty level (easy/medium/hard) if using curriculum mode
+    bias_category: str = ""
+    # Category of current heuristic (economic/social/cognitive/clinical/professional)

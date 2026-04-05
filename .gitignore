@@ -48,8 +48,8 @@ htmlcov/
 Thumbs.db
 
 # Build artifacts
-uv.lock
-*.lock
+# Note: uv.lock is REQUIRED by OpenEnv hackathon - do not ignore
+# *.lock
 
 # Local scripts (not for HF)
 SUBMIT.sh
