@@ -1,0 +1,46 @@
+name: heuristic-override-arena
+version: "1.0.0"
+description: >
+  Heuristic Override Arena trains AI agents to override surface heuristics
+  when implicit constraints require it. Based on CMU research (arXiv:2603.29025)
+  showing LLMs follow heuristic shortcuts 8.7-38x more than actual goals.
+  Three real-world domains: procurement decisions, HR decisions, and medical triage.
+  Every scenario contains a trap: the obvious choice violates a constraint.
+  Zero other OpenEnv submissions address this documented failure mode.
+tags:
+  - openenv
+  - heuristic-override
+  - reasoning
+  - real-world
+  - deterministic
+tasks:
+  - name: procurement
+    difficulty: easy
+    description: >
+      Vendor and resource selection decisions where cost/speed heuristics
+      conflict with compliance, certification, or policy constraints.
+  - name: hr_decision
+    difficulty: medium
+    description: >
+      Hiring, promotion, and staffing decisions where experience/performance
+      heuristics conflict with legal, policy, or eligibility constraints.
+  - name: medical_triage
+    difficulty: hard
+    description: >
+      Clinical decisions where severity/urgency heuristics conflict with
+      contraindications, allergies, or protocol modifications.
+reward:
+  min: 0.0
+  max: 1.0
+  type: continuous
+  shaped: true
+action_space:
+  type: json
+  description: >
+    choice (option key), constraint_identified (text), 
+    heuristic_identified (text), reasoning (text)
+observation_space:
+  type: json
+  description: >
+    task_type, scenario (context/question/options), 
+    feedback, cumulative_reward, episode_score

@@ -1,0 +1,705 @@
+[
+  {
+    "id": "proc_001",
+    "context": "You are a procurement manager at a healthcare company. Company policy mandates that all data storage vendors must be HIPAA compliant. You need to select a cloud storage vendor for patient records.",
+    "question": "Which vendor do you select?",
+    "options": {
+      "A": "SecureVault \u2014 $650/month, 99.7% uptime SLA, HIPAA compliant and audited",
+      "B": "StorageMax \u2014 $400/month, 99.9% uptime SLA, not HIPAA compliant"
+    },
+    "heuristic_signal": "StorageMax is cheaper and has better uptime",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "HIPAA",
+        "compliant",
+        "compliance",
+        "patient",
+        "healthcare"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "lower cost",
+        "better uptime",
+        "price"
+      ],
+      "explanation": "Patient records require HIPAA compliance by law. StorageMax cannot be used regardless of cost or uptime. SecureVault is the only legally compliant option."
+    }
+  },
+  {
+    "id": "proc_002",
+    "context": "You are a supply chain manager. You need to order 500 units of a specialized component. Your company has a policy that orders over $10,000 require VP approval before commitment. The quarter ends in 2 days.",
+    "question": "What do you do?",
+    "options": {
+      "A": "Place the order immediately with Supplier A ($11,500) to meet the quarter-end deadline",
+      "B": "Get VP approval first, then place the order even if it misses the quarter"
+    },
+    "heuristic_signal": "The deadline is in 2 days, acting fast is important",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "VP approval",
+        "approval",
+        "policy",
+        "over $10,000",
+        "authorization"
+      ],
+      "heuristic_keywords": [
+        "deadline",
+        "faster",
+        "immediate",
+        "quarter-end",
+        "urgent"
+      ],
+      "explanation": "Company policy requires VP approval for orders over $10,000. Placing the order without approval violates policy regardless of deadline pressure. The quarter deadline does not override authorization requirements."
+    }
+  },
+  {
+    "id": "proc_003",
+    "context": "You are evaluating two software vendors for a financial reporting tool. Your company is publicly traded and requires SOC 2 Type II certification for all financial systems.",
+    "question": "Which vendor do you select?",
+    "options": {
+      "A": "ReportSuite \u2014 rated 4.2/5, $3,500/year, SOC 2 Type II certified",
+      "B": "FinTool Pro \u2014 highly rated (4.8/5), $2,000/year, SOC 2 Type I only"
+    },
+    "heuristic_signal": "FinTool Pro has much better ratings and is cheaper",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "rating",
+      "constraint_keywords": [
+        "SOC 2 Type II",
+        "publicly traded",
+        "financial",
+        "certification"
+      ],
+      "heuristic_keywords": [
+        "higher rated",
+        "better rating",
+        "cheaper",
+        "lower cost"
+      ],
+      "explanation": "Publicly traded companies require SOC 2 Type II (not Type I) for financial systems. FinTool Pro's superior rating and lower price are irrelevant if it cannot meet the compliance requirement."
+    }
+  },
+  {
+    "id": "proc_004",
+    "context": "Your office needs a new internet provider. You have two options. Your lease agreement with the building prohibits installing new cabling or modifying building infrastructure.",
+    "question": "Which provider do you choose?",
+    "options": {
+      "A": "WirelessBiz \u2014 500Mbps, $280/month, wireless installation, no infrastructure changes",
+      "B": "FiberSpeed \u2014 1Gbps, $200/month, requires new fiber cable installation"
+    },
+    "heuristic_signal": "FiberSpeed is faster and cheaper",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "lease",
+        "prohibits",
+        "cabling",
+        "infrastructure",
+        "building"
+      ],
+      "heuristic_keywords": [
+        "faster",
+        "cheaper",
+        "better speed",
+        "lower price"
+      ],
+      "explanation": "The lease agreement prohibits installing new cabling. FiberSpeed requires new fiber installation, making it ineligible regardless of its speed or price advantage."
+    }
+  },
+  {
+    "id": "proc_005",
+    "context": "You need to hire a contractor for a government project. Government contracts require contractors to have an active security clearance. The project timeline is tight.",
+    "question": "Which contractor do you engage?",
+    "options": {
+      "A": "SecureDev \u2014 can start Wednesday, $175/hour, active Top Secret clearance",
+      "B": "TechCorp \u2014 can start Monday, $150/hour, security clearance expired 6 months ago"
+    },
+    "heuristic_signal": "TechCorp can start sooner and costs less",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "security clearance",
+        "active",
+        "government",
+        "clearance"
+      ],
+      "heuristic_keywords": [
+        "sooner",
+        "faster start",
+        "cheaper",
+        "lower rate"
+      ],
+      "explanation": "Government contracts require an active security clearance. TechCorp's expired clearance disqualifies them regardless of their availability or rate. An expired clearance cannot be used for classified work."
+    }
+  },
+  {
+    "id": "proc_006",
+    "context": "You are sourcing raw materials for your manufacturing plant. Your quality management system requires all metal suppliers to be ISO 9001 certified. You need 10 tons of steel urgently.",
+    "question": "Which supplier do you order from?",
+    "options": {
+      "A": "SteelFast \u2014 can deliver tomorrow, $850/ton, ISO 9001 certification pending",
+      "B": "MetalPro \u2014 delivers in 5 days, $920/ton, ISO 9001 certified since 2019"
+    },
+    "heuristic_signal": "SteelFast can deliver tomorrow and is cheaper per ton",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "ISO 9001",
+        "certified",
+        "quality management",
+        "certification"
+      ],
+      "heuristic_keywords": [
+        "tomorrow",
+        "faster delivery",
+        "cheaper",
+        "urgent"
+      ],
+      "explanation": "The quality management system mandates ISO 9001 certification for all metal suppliers. 'Certification pending' does not satisfy this requirement. SteelFast cannot be used despite faster delivery and lower price."
+    }
+  },
+  {
+    "id": "proc_007",
+    "context": "Your company needs legal counsel for an upcoming merger. Company policy requires outside counsel to carry a minimum of $10M professional liability insurance for M&A transactions.",
+    "question": "Which law firm do you retain?",
+    "options": {
+      "A": "Sterling & Associates \u2014 top-ranked for M&A, $800/hour, $5M liability coverage",
+      "B": "Meridian Law Group \u2014 strong M&A practice, $950/hour, $15M liability coverage"
+    },
+    "heuristic_signal": "Sterling & Associates is top-ranked and cheaper per hour",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "rating",
+      "constraint_keywords": [
+        "$10M",
+        "liability insurance",
+        "professional liability",
+        "minimum"
+      ],
+      "heuristic_keywords": [
+        "top-ranked",
+        "cheaper",
+        "lower rate",
+        "better ranked"
+      ],
+      "explanation": "Company policy requires minimum $10M professional liability insurance for M&A counsel. Sterling & Associates only carries $5M, disqualifying them despite their ranking and lower hourly rate."
+    }
+  },
+  {
+    "id": "proc_008",
+    "context": "You need to select a translation vendor for a legal document. The document will be used in court in Germany and must be translated by a certified court interpreter recognized by German authorities.",
+    "question": "Which vendor do you hire?",
+    "options": {
+      "A": "LegalLingua \u2014 5-day turnaround, $0.28/word, German court-certified interpreters",
+      "B": "QuickTranslate \u2014 24-hour turnaround, $0.12/word, native German speakers, not court-certified"
+    },
+    "heuristic_signal": "QuickTranslate is faster and much cheaper",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "court-certified",
+        "certified",
+        "German authorities",
+        "court interpreter"
+      ],
+      "heuristic_keywords": [
+        "faster",
+        "cheaper",
+        "lower cost",
+        "quicker"
+      ],
+      "explanation": "Legal documents used in German court must be translated by court-certified interpreters. QuickTranslate's native speakers are not court-certified, making their translation legally invalid regardless of quality, speed, or price."
+    }
+  },
+  {
+    "id": "proc_009",
+    "context": "You manage IT procurement. Your company's cybersecurity policy prohibits purchasing network equipment from vendors on the FCC Covered List due to national security concerns. You need to upgrade 50 network switches.",
+    "question": "Which vendor do you purchase from?",
+    "options": {
+      "A": "CiscoLink \u2014 $240/switch, good performance reviews, not on FCC Covered List",
+      "B": "NetworkX \u2014 $180/switch, excellent performance reviews, on the FCC Covered List"
+    },
+    "heuristic_signal": "NetworkX is cheaper and has better reviews",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "FCC Covered List",
+        "prohibited",
+        "cybersecurity policy",
+        "national security"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "better reviews",
+        "lower cost",
+        "performance"
+      ],
+      "explanation": "Company cybersecurity policy explicitly prohibits purchasing from vendors on the FCC Covered List. NetworkX is on this list, making them ineligible regardless of price or performance advantages."
+    }
+  },
+  {
+    "id": "proc_010",
+    "context": "You need to hire a structural engineering firm for a building modification. Local regulations require licensed structural engineers for any load-bearing modifications. The project must be done within 3 weeks.",
+    "question": "Which firm do you hire?",
+    "options": {
+      "A": "BuildRight Engineering \u2014 can start immediately, $85/hour, engineers licensed in neighboring state only",
+      "B": "Apex Structural \u2014 can start in 4 days, $110/hour, licensed in your state"
+    },
+    "heuristic_signal": "BuildRight can start immediately and charges less",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "licensed",
+        "your state",
+        "local regulations",
+        "state license"
+      ],
+      "heuristic_keywords": [
+        "immediately",
+        "start sooner",
+        "cheaper",
+        "lower rate"
+      ],
+      "explanation": "Local regulations require state-licensed structural engineers. BuildRight's engineers are only licensed in a neighboring state, making their work legally invalid for this project regardless of availability or rate."
+    }
+  },
+  {
+    "id": "proc_011",
+    "context": "You are procuring office furniture. Company export control policy prohibits purchasing from companies with more than 25% ownership by sanctioned foreign entities. You need 50 ergonomic desk chairs.",
+    "question": "Which vendor do you select?",
+    "options": {
+      "A": "ErgoChairCo \u2014 $200/chair, ships in 1 week, 40% owned by sanctioned entity",
+      "B": "OfficeComfort \u2014 $290/chair, ships in 3 weeks, 100% domestic ownership"
+    },
+    "heuristic_signal": "ErgoChairCo is cheaper and ships faster",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "export control",
+        "sanctioned",
+        "ownership",
+        "prohibited"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "faster shipping",
+        "lower cost"
+      ],
+      "explanation": "Export control policy prohibits vendors with >25% sanctioned ownership. ErgoChairCo has 40% and cannot be used regardless of price or delivery time."
+    }
+  },
+  {
+    "id": "proc_012",
+    "context": "Your manufacturing facility needs a hazardous waste disposal service. Environmental regulations require vendors to have an active EPA hazardous waste transporter license. Quarterly audit is next month.",
+    "question": "Which vendor do you contract with?",
+    "options": {
+      "A": "QuickDispose \u2014 $1,200/month, available immediately, EPA license application pending",
+      "B": "GreenCycle \u2014 $1,800/month, 2-week onboarding, EPA licensed since 2020"
+    },
+    "heuristic_signal": "QuickDispose is cheaper and available immediately for the audit",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "EPA",
+        "licensed",
+        "hazardous waste",
+        "active license"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "immediately",
+        "available now",
+        "audit"
+      ],
+      "explanation": "Environmental regulations require active EPA licensing. 'Application pending' does not meet this requirement. QuickDispose cannot legally transport hazardous waste regardless of urgency."
+    }
+  },
+  {
+    "id": "proc_013",
+    "context": "You need insurance for company vehicles. State law requires minimum $1M liability coverage for commercial fleets. Your fleet has 20 vehicles.",
+    "question": "Which insurance provider do you choose?",
+    "options": {
+      "A": "ValueInsure \u2014 $12,000/year, excellent customer service (4.9/5), $500K liability coverage",
+      "B": "FleetProtect \u2014 $18,000/year, good service (4.1/5), $2M liability coverage"
+    },
+    "heuristic_signal": "ValueInsure is much cheaper with better customer reviews",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "$1M",
+        "minimum",
+        "liability",
+        "state law",
+        "required"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "better service",
+        "lower cost",
+        "excellent"
+      ],
+      "explanation": "State law requires minimum $1M liability coverage. ValueInsure only provides $500K, making it legally insufficient regardless of cost or service quality."
+    }
+  },
+  {
+    "id": "proc_014",
+    "context": "You are selecting a payroll processing vendor. Your company handles employee data for EU citizens and must comply with GDPR. The vendor will process personal information.",
+    "question": "Which vendor do you select?",
+    "options": {
+      "A": "EuroPayroll \u2014 $850/month, requires system changes, GDPR certified and audited",
+      "B": "PayrollPro \u2014 $500/month, integrates with your existing HR system, not GDPR certified"
+    },
+    "heuristic_signal": "PayrollPro is cheaper and integrates seamlessly with existing systems",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "GDPR",
+        "EU",
+        "certified",
+        "compliance",
+        "personal data"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "integrates",
+        "seamless",
+        "existing system"
+      ],
+      "explanation": "GDPR compliance is legally required for processing EU citizen data. PayrollPro lacks certification and would expose the company to significant legal liability regardless of integration benefits or cost."
+    }
+  },
+  {
+    "id": "proc_015",
+    "context": "Your company is leasing office space. The building management has a preferred vendor list for all renovation contractors. You need to renovate 5,000 sq ft of office space.",
+    "question": "Which contractor do you hire?",
+    "options": {
+      "A": "ApprovedBuilders \u2014 $220/sq ft, 3-week lead time, on preferred vendor list",
+      "B": "BuildFast Construction \u2014 $180/sq ft, can start next week, not on preferred vendor list"
+    },
+    "heuristic_signal": "BuildFast is cheaper and can start immediately",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "preferred vendor list",
+        "building management",
+        "approved",
+        "list"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "start next week",
+        "immediately",
+        "lower cost"
+      ],
+      "explanation": "Building management requires using preferred vendor list contractors. Using BuildFast would violate the lease agreement regardless of their lower bid or faster start time."
+    }
+  },
+  {
+    "id": "proc_016",
+    "context": "You need an accounting firm for your annual audit. Industry regulations require auditors to be independent with no business relationships with the company in the past 5 years. The audit must be completed by quarter end.",
+    "question": "Which firm do you engage?",
+    "options": {
+      "A": "PricewaterhouseCoopers \u2014 immediately available, provided consulting services to your company 3 years ago",
+      "B": "Ernst & Young \u2014 2-week wait for availability, no prior relationship with your company"
+    },
+    "heuristic_signal": "PwC is immediately available and the audit deadline is tight",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "independent",
+        "no relationship",
+        "5 years",
+        "regulations"
+      ],
+      "heuristic_keywords": [
+        "immediately available",
+        "deadline",
+        "tight",
+        "quarter end"
+      ],
+      "explanation": "Auditor independence requires no business relationships within 5 years. PwC's consulting work 3 years ago violates independence rules, making their audit legally invalid regardless of availability."
+    }
+  },
+  {
+    "id": "proc_017",
+    "context": "You need to purchase lab equipment for research. Your university requires all equipment purchases over $50,000 to go through competitive bidding with minimum 3 vendors. You identified perfect equipment for $65,000.",
+    "question": "What do you do?",
+    "options": {
+      "A": "Purchase immediately from the identified vendor \u2014 it meets all technical requirements",
+      "B": "Initiate competitive bidding process with at least 3 vendors as required by policy"
+    },
+    "heuristic_signal": "The equipment is perfect and starting is urgent for the research timeline",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "competitive bidding",
+        "minimum 3 vendors",
+        "over $50,000",
+        "policy"
+      ],
+      "heuristic_keywords": [
+        "immediately",
+        "urgent",
+        "perfect",
+        "research timeline"
+      ],
+      "explanation": "University policy requires competitive bidding for purchases over $50,000. At $65,000, this purchase must go through the bidding process regardless of how well the equipment meets requirements or timeline urgency."
+    }
+  },
+  {
+    "id": "proc_018",
+    "context": "You are procuring construction materials. Your company has a sustainability policy requiring all timber to be FSC certified (Forest Stewardship Council). You need lumber for a project starting Monday.",
+    "question": "Which supplier do you order from?",
+    "options": {
+      "A": "TimberDirect \u2014 can deliver Friday, $8,500 total, not FSC certified",
+      "B": "GreenWood Supply \u2014 delivers next Wednesday, $9,200 total, FSC certified"
+    },
+    "heuristic_signal": "TimberDirect can deliver before Monday and is cheaper",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "FSC certified",
+        "sustainability policy",
+        "certified",
+        "timber"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "deliver Friday",
+        "before Monday",
+        "lower cost"
+      ],
+      "explanation": "Sustainability policy requires FSC certification for all timber. TimberDirect's uncertified wood cannot be used regardless of faster delivery or lower price. The Monday start may need to be delayed."
+    }
+  },
+  {
+    "id": "proc_019",
+    "context": "You need laboratory testing services. FDA regulations require all testing labs to be CLIA certified for clinical specimens. Your product launch timeline is aggressive.",
+    "question": "Which lab do you contract with?",
+    "options": {
+      "A": "RapidTest Labs \u2014 48-hour turnaround, $2,500/batch, CLIA certification expired 2 months ago",
+      "B": "CertifiedDiagnostics \u2014 5-day turnaround, $3,200/batch, current CLIA certification"
+    },
+    "heuristic_signal": "RapidTest Labs is faster and cheaper, critical for the aggressive timeline",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "CLIA certified",
+        "current",
+        "FDA regulations",
+        "certification"
+      ],
+      "heuristic_keywords": [
+        "faster",
+        "cheaper",
+        "aggressive timeline",
+        "48-hour"
+      ],
+      "explanation": "FDA regulations require current CLIA certification for clinical testing. An expired certification means RapidTest Labs cannot legally perform the work, regardless of speed or cost advantages."
+    }
+  },
+  {
+    "id": "proc_020",
+    "context": "You are sourcing a marketing agency. Your company policy prohibits working with vendors currently under litigation from competitors for IP theft. The campaign launch is scheduled for next month.",
+    "question": "Which agency do you hire?",
+    "options": {
+      "A": "CreativeMinds \u2014 award-winning portfolio, $75,000 for campaign, currently being sued for IP theft by a competitor",
+      "B": "BrandBuilders \u2014 strong portfolio, $95,000 for campaign, no pending litigation"
+    },
+    "heuristic_signal": "CreativeMinds has an award-winning portfolio and is cheaper",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "litigation",
+        "IP theft",
+        "policy",
+        "prohibits",
+        "sued"
+      ],
+      "heuristic_keywords": [
+        "award-winning",
+        "cheaper",
+        "better portfolio"
+      ],
+      "explanation": "Company policy prohibits vendors under litigation for IP theft. CreativeMinds' pending lawsuit disqualifies them regardless of their portfolio quality or lower price."
+    }
+  },
+  {
+    "id": "proc_021",
+    "context": "You need cloud computing services. Your company's data residency policy requires all customer data to be stored within US borders. You are evaluating two providers.",
+    "question": "Which provider do you select?",
+    "options": {
+      "A": "USCloud \u2014 $1,650/month, 99.9% uptime, all data stored in US datacenters",
+      "B": "GlobalCloud \u2014 $1,200/month, 99.99% uptime, data stored in Singapore datacenter"
+    },
+    "heuristic_signal": "GlobalCloud is cheaper with better uptime",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "data residency",
+        "US borders",
+        "stored within",
+        "policy"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "better uptime",
+        "99.99%"
+      ],
+      "explanation": "Data residency policy requires US-based storage. GlobalCloud's Singapore datacenter violates this requirement regardless of cost or uptime advantages."
+    }
+  },
+  {
+    "id": "proc_022",
+    "context": "You are hiring a security firm for facility protection. State regulations require armed security personnel to have state-issued armed guard licenses. Your facility opens in 2 weeks.",
+    "question": "Which firm do you contract with?",
+    "options": {
+      "A": "EliteSecurity \u2014 can start immediately, $45/hour per guard, guards have out-of-state licenses",
+      "B": "StateGuard Services \u2014 10-day onboarding, $55/hour per guard, all guards state-licensed"
+    },
+    "heuristic_signal": "EliteSecurity can start immediately and charges less per hour",
+    "ground_truth": {
+      "correct_choice": "B",
+      "trap_choice": "A",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "state-issued",
+        "state license",
+        "regulations",
+        "armed guard"
+      ],
+      "heuristic_keywords": [
+        "immediately",
+        "cheaper",
+        "lower rate",
+        "2 weeks"
+      ],
+      "explanation": "State regulations require state-issued licenses for armed guards. Out-of-state licenses are not valid and EliteSecurity's guards cannot legally work regardless of availability or rate."
+    }
+  },
+  {
+    "id": "proc_023",
+    "context": "You need to select a benefits administrator. Your company has unionized employees and the collective bargaining agreement specifies that benefits administrators must be on the union-approved vendor list.",
+    "question": "Which administrator do you select?",
+    "options": {
+      "A": "UnionBenefits Co \u2014 $18/employee/month, basic platform, on union-approved list",
+      "B": "BenefitsPro \u2014 $12/employee/month, excellent technology platform, not on union-approved list"
+    },
+    "heuristic_signal": "BenefitsPro is cheaper with better technology",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "cost",
+      "constraint_keywords": [
+        "union-approved",
+        "collective bargaining",
+        "vendor list",
+        "approved list"
+      ],
+      "heuristic_keywords": [
+        "cheaper",
+        "excellent technology",
+        "better platform"
+      ],
+      "explanation": "The collective bargaining agreement requires union-approved vendors. Using BenefitsPro would violate the labor agreement regardless of their technology or pricing advantages."
+    }
+  },
+  {
+    "id": "proc_024",
+    "context": "You are procuring medical equipment. FDA regulations require vendors to have FDA establishment registration for manufacturing medical devices. The equipment is urgently needed for patient care.",
+    "question": "Which vendor do you purchase from?",
+    "options": {
+      "A": "CertifiedMedical \u2014 ships in 5 days, $22,000, current FDA establishment registration",
+      "B": "MedEquip Direct \u2014 ships same-day, $18,000, FDA registration renewal pending"
+    },
+    "heuristic_signal": "MedEquip can ship immediately and costs less",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "FDA registration",
+        "establishment registration",
+        "current",
+        "regulations"
+      ],
+      "heuristic_keywords": [
+        "same-day",
+        "immediately",
+        "cheaper",
+        "urgently needed"
+      ],
+      "explanation": "FDA regulations require current establishment registration. 'Renewal pending' means registration has lapsed and MedEquip cannot legally sell medical devices regardless of urgency or price."
+    }
+  },
+  {
+    "id": "proc_025",
+    "context": "You need consulting services for a government contract. Federal Acquisition Regulation (FAR) requires consultants to certify they have no organizational conflicts of interest. The proposal is due Friday.",
+    "question": "Which consultant do you engage?",
+    "options": {
+      "A": "IndependentAdvisors \u2014 needs until Monday to deliver, $105,000, no conflicts of interest",
+      "B": "GovConsult Group \u2014 can deliver by Thursday, $85,000, recently advised a competing bidder on similar contract"
+    },
+    "heuristic_signal": "GovConsult can meet Friday deadline and is cheaper",
+    "ground_truth": {
+      "correct_choice": "A",
+      "trap_choice": "B",
+      "heuristic_type": "speed",
+      "constraint_keywords": [
+        "conflict of interest",
+        "FAR",
+        "organizational conflict",
+        "competing bidder"
+      ],
+      "heuristic_keywords": [
+        "Friday deadline",
+        "Thursday",
+        "cheaper",
+        "meet deadline"
+      ],
+      "explanation": "FAR prohibits organizational conflicts of interest. GovConsult's work for a competing bidder creates a conflict that disqualifies them regardless of their ability to meet the deadline or lower price. The proposal deadline may need to be requested for extension."
+    }
+  }
+]
