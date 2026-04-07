@@ -105,73 +105,76 @@ async def run_task(task_name: str) -> float:
     action_dict = {}
 
     try:
-        # Use HF Space URL if deployed, local image for local testing
+        # Connect to environment
         space_url = os.getenv("SPACE_URL", "")
-        
         if space_url:
-            # Connect to deployed HF Space
             env_client = HOAEnv(base_url=space_url)
         else:
-            # Use local Docker image
             from openenv.core.containers.runtime import LocalDockerProvider
             provider = LocalDockerProvider()
             env_client = await HOAEnv.from_docker_image(LOCAL_IMAGE_NAME, provider=provider, container_port=7860)
 
-        async with env_client as env:
+        # We will loop exactly until step == 3 or done=True
+        env = await env_client.__aenter__()
+        result = await env.reset(seed=42, task=task_name)
+
+        while result and not result.done and step < 3:
+            step += 1
+            if isinstance(result.observation, dict):
+                scenario = result.observation.get("scenario", {})
+            else:
+                scenario = getattr(result.observation, "scenario", {}) or {}
+            
+            # Generate LLM Action
             try:
-                result = await env.reset(seed=42, task=task_name)
+                action_dict = call_llm(scenario)
+                action = HOAAction(
+                    choice=action_dict.get("choice", ""),
+                    constraint_identified=action_dict.get("constraint_identified", ""),
+                    heuristic_identified=action_dict.get("heuristic_identified", ""),
+                    reasoning=action_dict.get("reasoning", ""),
+                )
+                last_error = None
             except Exception as e:
-                print(f"[DEBUG] Network error during reset: {e}", file=sys.stderr, flush=True)
-                raise
+                action = HOAAction(choice="A", constraint_identified="", heuristic_identified="")
+                action_dict = {"choice": "A", "error": "parse_failed"}
+                last_error = str(e)[:100]
 
-            while result and not result.done:
-                step += 1
-                if isinstance(result.observation, dict):
-                    scenario = result.observation.get("scenario", {})
-                else:
-                    scenario = getattr(result.observation, "scenario", {}) or {}
+            # Step Environment
+            try:
+                result = await env.step(action)
+                reward = result.reward if result.reward is not None else 0.0
+                rewards.append(reward)
+                log_step(step, action_dict, reward, result.done or (step == 3), last_error)
+            except Exception as e:
+                err_str = str(e)
+                print(f"[DEBUG] Network error during step {step}: {err_str}", file=sys.stderr, flush=True)
                 
-                try:
-                    action_dict = call_llm(scenario)
-                    action = HOAAction(
-                        choice=action_dict.get("choice", ""),
-                        constraint_identified=action_dict.get("constraint_identified", ""),
-                        heuristic_identified=action_dict.get("heuristic_identified", ""),
-                        reasoning=action_dict.get("reasoning", ""),
-                    )
-                    last_error = None
-                except Exception as e:
-                    action = HOAAction(choice="B", constraint_identified="", heuristic_identified="")
-                    action_dict = {"choice": "B", "error": "parse_failed"}
-                    last_error = str(e)[:100]
-
-                try:
+                if "1011" in err_str or "keepalive" in err_str.lower() or "close" in err_str.lower():
+                    print("[DEBUG] WebSocket dropped, reconnecting transparently...", file=sys.stderr, flush=True)
+                    try:
+                        # Close old
+                        await env_client.__aexit__(None, None, None)
+                    except Exception:
+                        pass
+                        
+                    # Rebuild client and restart env silently to grab next scenario
+                    env_client = HOAEnv(base_url=space_url)
+                    env = await env_client.__aenter__()
+                    result = await env.reset(seed=step*100, task=task_name)
+                    
+                    # Apply action to new connection
                     result = await env.step(action)
                     reward = result.reward if result.reward is not None else 0.0
                     rewards.append(reward)
-                    log_step(step, action_dict, reward, result.done, last_error)
-                except Exception as e:
-                    err_str = str(e)
-                    print(f"[DEBUG] Network error during step: {err_str}", file=sys.stderr, flush=True)
-                    # If WebSocket dropped, reconnect and retry this step
-                    if "1011" in err_str or "keepalive" in err_str.lower() or "close" in err_str.lower():
-                        print("[DEBUG] WebSocket dropped, reconnecting...", file=sys.stderr, flush=True)
-                        try:
-                            env_retry = HOAEnv(base_url=space_url)
-                            async with env_retry as env2:
-                                result2 = await env2.reset(seed=step, task=task_name)
-                                result2 = await env2.step(action)
-                                reward = result2.reward if result2.reward is not None else 0.0
-                                rewards.append(reward)
-                                log_step(step, action_dict, reward, True, None)
-                            result = type('R', (), {'done': True})()  # end this episode
-                            continue
-                        except Exception as retry_err:
-                            print(f"[DEBUG] Retry also failed: {retry_err}", file=sys.stderr, flush=True)
+                    log_step(step, action_dict, reward, result.done or (step == 3), last_error)
+                else:
                     last_error = str(e)[:100]
                     rewards.append(0.0)
                     log_step(step, action_dict, 0.0, True, last_error)
                     break
+
+        await env_client.__aexit__(None, None, None)
 
     except Exception as e:
         last_error = str(e)[:100]
