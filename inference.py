@@ -14,7 +14,7 @@ from openai import OpenAI
 API_BASE_URL     = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME       = os.getenv("MODEL_NAME",   "Qwen/Qwen2.5-72B-Instruct")
 HF_TOKEN         = os.getenv("HF_TOKEN")
-LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME", "heuristic-override-arena")
 BENCHMARK        = "heuristic-override-arena"
 SUCCESS_THRESHOLD = 0.5
 
@@ -44,24 +44,28 @@ def call_llm(scenario: dict) -> dict:
     # Remove ground_truth if somehow present (safety measure)
     safe_scenario = {k: v for k, v in scenario.items() if k != "ground_truth"}
     
-    resp = llm.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Scenario:\n{json.dumps(safe_scenario, indent=2)}"},
-        ],
-        temperature=0.1,
-        max_tokens=400,
-    )
-    raw = resp.choices[0].message.content.strip()
-    if "```" in raw:
-        for part in raw.split("```"):
-            part = part.strip().lstrip("json").strip()
-            try:
-                return json.loads(part)
-            except Exception:
-                continue
-    return json.loads(raw)
+    try:
+        resp = llm.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": f"Scenario:\n{json.dumps(safe_scenario, indent=2)}"},
+            ],
+            temperature=0.1,
+            max_tokens=400,
+        )
+        raw = resp.choices[0].message.content.strip()
+        if "```" in raw:
+            for part in raw.split("```"):
+                part = part.strip().lstrip("json").strip()
+                try:
+                    return json.loads(part)
+                except Exception:
+                    continue
+        return json.loads(raw)
+    except Exception as e:
+        print(f"[DEBUG] LLM or parsing error: {e}", file=sys.stderr, flush=True)
+        return {"choice": "B", "error": str(e)[:100]}
 
 
 def log_start(task: str, model: str):
@@ -107,12 +111,16 @@ async def run_task(task_name: str) -> float:
             # Use local Docker image
             from openenv.core.containers.runtime import LocalDockerProvider
             provider = LocalDockerProvider()
-            env_client = HOAEnv.from_docker_image(LOCAL_IMAGE_NAME, provider=provider)
+            env_client = await HOAEnv.from_docker_image(LOCAL_IMAGE_NAME, provider=provider, container_port=7860)
 
         async with env_client as env:
-            result = await env.reset(seed=42, task=task_name)
+            try:
+                result = await env.reset(seed=42, task=task_name)
+            except Exception as e:
+                print(f"[DEBUG] Network error during reset: {e}", file=sys.stderr, flush=True)
+                raise
 
-            while not result.done:
+            while result and not result.done:
                 step += 1
                 if isinstance(result.observation, dict):
                     scenario = result.observation.get("scenario", {})
@@ -133,10 +141,17 @@ async def run_task(task_name: str) -> float:
                     action_dict = {"choice": "B", "error": "parse_failed"}
                     last_error = str(e)[:100]
 
-                result = await env.step(action)
-                reward = result.reward if result.reward is not None else 0.0
-                rewards.append(reward)
-                log_step(step, action_dict, reward, result.done, last_error)
+                try:
+                    result = await env.step(action)
+                    reward = result.reward if result.reward is not None else 0.0
+                    rewards.append(reward)
+                    log_step(step, action_dict, reward, result.done, last_error)
+                except Exception as e:
+                    print(f"[DEBUG] Network error during step: {e}", file=sys.stderr, flush=True)
+                    last_error = str(e)[:100]
+                    rewards.append(0.0)
+                    log_step(step, action_dict, 0.0, True, last_error)
+                    break
 
     except Exception as e:
         last_error = str(e)[:100]
@@ -155,9 +170,9 @@ async def main():
     for task in TASKS:
         score = await run_task(task)
         all_scores.append(score)
-        print(f"# Task {task}: score={score:.4f}", flush=True)
+        print(f"[DEBUG] # Task {task}: score={score:.4f}", file=sys.stderr, flush=True)
     overall = sum(all_scores) / len(all_scores) if all_scores else 0.0
-    print(f"# Overall: {overall:.4f}", flush=True)
+    print(f"[DEBUG] # Overall: {overall:.4f}", file=sys.stderr, flush=True)
     sys.exit(0 if all(s >= SUCCESS_THRESHOLD for s in all_scores) else 1)
 
 
