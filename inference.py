@@ -18,7 +18,7 @@ LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME", "heuristic-override-arena")
 BENCHMARK        = "heuristic-override-arena"
 SUCCESS_THRESHOLD = 0.5
 
-TASKS = ["procurement", "hr_decision", "medical_triage"]
+TASKS = ["procurement", "hr_decision", "medical_triage", "cognitive_biases", "edge_cases"]
 
 llm = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
@@ -34,7 +34,7 @@ Respond ONLY with valid JSON (no markdown, no extra text):
   "choice": "<exact option key from the scenario, e.g. 'A' or 'B'>",
   "constraint_identified": "<the specific rule, policy, certification, or requirement that determines the answer>",
   "heuristic_identified": "<the misleading shortcut you had to override, e.g. 'lower cost', 'more experience'>",
-  "reasoning": "<brief explanation of why the constraint overrides the heuristic>"
+  "reasoning": "<brief explanation of why the constraint overrides the heuristic. Escape all quotes properly>"
 }
 
 CRITICAL: Always read the full scenario before choosing. The obvious answer is often wrong."""
@@ -52,7 +52,7 @@ def call_llm(scenario: dict) -> dict:
                 {"role": "user", "content": f"Scenario:\n{json.dumps(safe_scenario, indent=2)}"},
             ],
             temperature=0.1,
-            max_tokens=400,
+            max_tokens=800,
         )
         raw = resp.choices[0].message.content.strip()
         if "```" in raw:
