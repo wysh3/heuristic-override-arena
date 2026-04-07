@@ -18,6 +18,41 @@ def _normalize(s: str) -> str:
     return s.strip().lower().replace("-", "").replace("_", "").replace(" ", "")
 
 
+# Synonym expansion for robust keyword matching.
+# Maps normalized keyword → list of normalized alternative forms.
+KEYWORD_ALTERNATIVES = {
+    "hipaa": ["healthinsuranceportability", "healthinsuranceportabilityandaccountabilityact"],
+    "gdpr": ["generaldataprotectionregulation", "eudataprotection"],
+    "soc2": ["serviceorganizationcontrol", "systemandorganizationcontrols"],
+    "soc2typeii": ["serviceorganizationcontrol", "soc2"],
+    "iso27001": ["informationsecuritymanagement", "isocertification"],
+    "pcidss": ["paymentcardindustry", "paymentcardindustrydatasecurity"],
+    "roi": ["returnoninvestment", "investmentreturn"],
+    "compliance": ["compliant", "comply", "regulatorycompliance"],
+    "compliant": ["compliance", "comply"],
+    "certification": ["certified", "certificate", "accreditation", "accredited"],
+    "certified": ["certification", "certificate", "accredited"],
+    "policy": ["policies", "mandate", "regulation", "requirement"],
+    "requires": ["required", "requirement", "mandatory", "mandated"],
+    "required": ["requires", "requirement", "mandatory"],
+    "security": ["secure", "cybersecurity", "informationsecurity"],
+    "license": ["licensed", "licensing", "licensure"],
+    "licensed": ["license", "licensing", "licensure"],
+    "protocol": ["guideline", "guidelines", "standardofcare"],
+    "guideline": ["protocol", "guidelines", "standardofcare"],
+    "anticoagulation": ["anticoagulant", "bloodthinner", "thromboprophylaxis"],
+    "contraindication": ["contraindicated", "contraindicates"],
+    "backgroundcheck": ["backgroundscreening", "criminalrecordcheck"],
+    "continuingeducation": ["professionaldevelopment", "cecredits"],
+    "antinepotism": ["nepotismpolicy", "nepotism", "hiringrelatives"],
+    "vulnerability": ["securityflaw", "securityvulnerability"],
+    "liability": ["liabilitycoverage", "liabilityinsurance"],
+    "dataresidency": ["datasovereignty", "datajurisdiction"],
+    "allergy": ["allergic", "allergen", "hypersensitivity"],
+    "audit": ["audited", "auditing", "securityaudit"],
+}
+
+
 def _choice_correct(agent_choice: str, correct_choice: str) -> bool:
     """Check if agent picked the correct option."""
     return _normalize(agent_choice) == _normalize(correct_choice)
@@ -26,12 +61,22 @@ def _choice_correct(agent_choice: str, correct_choice: str) -> bool:
 def _keyword_match(agent_text: str, keywords: list) -> float:
     """
     Check how many keywords from the ground truth appear in agent's text.
+    Uses synonym expansion for robust matching.
     Returns 0.0 to 1.0.
     """
     if not keywords or not agent_text:
         return 0.0
     agent_norm = _normalize(agent_text)
-    matched = sum(1 for kw in keywords if _normalize(kw) in agent_norm)
+    matched = 0
+    for kw in keywords:
+        kw_norm = _normalize(kw)
+        if kw_norm in agent_norm:
+            matched += 1
+            continue
+        # Check known alternative phrasings
+        alternatives = KEYWORD_ALTERNATIVES.get(kw_norm, [])
+        if any(alt in agent_norm for alt in alternatives):
+            matched += 1
     return matched / len(keywords)
 
 

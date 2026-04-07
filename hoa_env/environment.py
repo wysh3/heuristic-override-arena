@@ -33,6 +33,9 @@ DIFFICULTY_CONFIG = {
     "hard": {"trap_weight": 1.0, "tasks": ["medical_triage", "edge_cases"]},
 }
 
+# Number of scenarios per episode in single-task mode
+SCENARIOS_PER_EPISODE = 3
+
 # Heuristic type categories for analytics
 HEURISTIC_CATEGORIES = {
     "economic": ["cost", "speed", "efficiency"],
@@ -79,6 +82,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         self._difficulty = None
         self._ep_state = HOAState()
         self._bias_stats: Dict[str, Dict[str, float]] = {}  # Per-bias performance
+        self._used_scenario_ids: set = set()  # Dedup within episode
 
     def _load_all(self) -> dict:
         """Load all scenarios from JSON files."""
@@ -97,20 +101,23 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
                     out[task] = json.load(f)
         return out
 
-    def _pick(self, task: str, difficulty: Optional[str] = None) -> dict:
+    def _pick(self, task: str, difficulty: Optional[str] = None, exclude_ids: Optional[set] = None) -> dict:
         """
         Pick a random scenario from the specified task.
-        Optionally filter by difficulty (trap_intensity field).
+        Optionally filter by difficulty and exclude already-used scenarios.
         """
         scenarios = self._scenarios.get(task, [])
         if not scenarios:
-            # Fallback to procurement if task not found
             scenarios = self._scenarios.get("procurement", [])
         
         if difficulty:
-            # Filter by trap_intensity if available
             filtered = [s for s in scenarios 
                        if s.get("trap_intensity", "medium") == difficulty]
+            if filtered:
+                scenarios = filtered
+        
+        if exclude_ids:
+            filtered = [s for s in scenarios if s.get("id") not in exclude_ids]
             if filtered:
                 scenarios = filtered
         
@@ -217,8 +224,10 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
 
         self._scores = []
         self._bias_stats = {}
+        self._used_scenario_ids = set()
         eid = episode_id or str(uuid.uuid4())
         self._current_scenario = self._pick(current_task, difficulty)
+        self._used_scenario_ids.add(self._current_scenario.get("id"))
 
         self._ep_state = HOAState(
             episode_id=eid,
@@ -293,29 +302,31 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         self._update_bias_stats(heuristic_type, score)
 
         self._scores.append(score)
-        self._ep_state.task_scores[current_task] = score
+        self._ep_state.task_scores[f"{current_task}_step{self._ep_state.step_count}"] = score
         self._ep_state.scenarios_completed += 1
 
         # Track trap rate
         traps = sum(1 for s in self._scores if s < 0.3)
         self._ep_state.heuristic_trap_rate = traps / len(self._scores)
 
-        # Advance task
-        self._task_idx += 1
-        
         # Determine if episode is done
         if self._single_task is not None:
-            done = True  # Single-task mode: done after 1 scenario
+            # Single-task mode: run SCENARIOS_PER_EPISODE scenarios
+            done = self._ep_state.scenarios_completed >= SCENARIOS_PER_EPISODE
         else:
-            done = self._task_idx >= len(TASK_ORDER)  # Multi-task: done after 3 scenarios
+            self._task_idx += 1
+            done = self._task_idx >= len(TASK_ORDER)
 
         if not done:
-            # Get next task based on mode
-            if self._difficulty:
+            # Get next scenario
+            if self._single_task:
+                next_task = self._single_task
+            elif self._difficulty:
                 next_task = self._get_task_for_difficulty(self._difficulty)
             else:
                 next_task = TASK_ORDER[self._task_idx]
-            self._current_scenario = self._pick(next_task, self._difficulty)
+            self._current_scenario = self._pick(next_task, self._difficulty, self._used_scenario_ids)
+            self._used_scenario_ids.add(self._current_scenario.get("id"))
             self._ep_state.current_task = next_task
             public_next = {k: v for k, v in self._current_scenario.items() 
                           if k != "ground_truth"}

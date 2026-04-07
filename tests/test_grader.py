@@ -33,7 +33,7 @@ class TestGrader:
             heuristic_identified="cheaper price and better uptime",
         )
         score, _ = grade_scenario(action, SAMPLE_GT)
-        assert score == pytest.approx(0.8667, abs=0.01)
+        assert score == pytest.approx(0.9333, abs=0.01)
 
     def test_correct_choice_only(self):
         action = make_action(choice="B")
@@ -52,7 +52,7 @@ class TestGrader:
             constraint_identified="HIPAA compliance is mandatory",
         )
         score, _ = grade_scenario(action, SAMPLE_GT)
-        assert score == pytest.approx(0.7333, abs=0.01)
+        assert score == pytest.approx(0.8, abs=0.01)
 
     def test_score_in_range(self):
         for choice in ["A", "B"]:
