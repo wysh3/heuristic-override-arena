@@ -108,25 +108,43 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         """
         scenarios = self._scenarios.get(task, [])
         if not scenarios:
-            scenarios = self._scenarios.get("procurement", [])
+            # Fallback to any task that has scenarios
+            for t in self._scenarios:
+                if self._scenarios[t]:
+                    scenarios = self._scenarios[t]
+                    break
         
+        if not scenarios:
+            # Fatal: no scenarios found anywhere
+            return {
+                "id": "fallback_000",
+                "context": "Scenario system failure. Please contact environment developer.",
+                "question": "Choose A.",
+                "options": {"A": "A", "B": "B"},
+                "ground_truth": {"correct_choice": "A", "trap_choice": "B", "heuristic_type": "none"}
+            }
+
+        valid_pool = scenarios
         if difficulty:
-            filtered = [s for s in scenarios 
+            filtered = [s for s in valid_pool 
                        if s.get("trap_intensity", "medium") == difficulty]
             if filtered:
-                scenarios = filtered
+                valid_pool = filtered
         
         if exclude_ids:
-            filtered = [s for s in scenarios if s.get("id") not in exclude_ids]
+            filtered = [s for s in valid_pool if s.get("id") not in exclude_ids]
             if filtered:
-                scenarios = filtered
+                valid_pool = filtered
         
-        return random.choice(scenarios)
+        return random.choice(valid_pool)
     
     def _get_task_for_difficulty(self, difficulty: str) -> str:
         """Get a task appropriate for the difficulty level."""
         config = DIFFICULTY_CONFIG.get(difficulty, DIFFICULTY_CONFIG["medium"])
-        available_tasks = [t for t in config["tasks"] if t in self._scenarios]
+        available_tasks = [t for t in config["tasks"] if t in self._scenarios and self._scenarios[t]]
+        if not available_tasks:
+            # Fallback to absolute list of all tasks
+            available_tasks = [t for t in self._scenarios if self._scenarios[t]]
         return random.choice(available_tasks) if available_tasks else "procurement"
     
     def _categorize_heuristic(self, heuristic_type: str) -> str:
