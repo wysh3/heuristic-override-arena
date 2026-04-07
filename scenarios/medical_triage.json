@@ -4,8 +4,8 @@
     "context": "You are an ER nurse performing initial triage. A patient arrives with severe chest pain (potential MI) and reports they took the maximum dose of ibuprofen 30 minutes ago for a headache. Standard protocol for suspected MI includes administering aspirin immediately.",
     "question": "What is your immediate action?",
     "options": {
-      "A": "Hold the aspirin and notify the physician immediately \u2014 the patient has already taken NSAIDs",
-      "B": "Administer aspirin immediately as per MI protocol \u2014 chest pain is the priority"
+      "A": "Hold the aspirin and notify the physician immediately — the patient has already taken NSAIDs",
+      "B": "Administer aspirin immediately as per MI protocol — chest pain is the priority"
     },
     "heuristic_signal": "Chest pain is severe and MI protocol says aspirin immediately",
     "ground_truth": {
@@ -27,17 +27,18 @@
         "priority"
       ],
       "explanation": "Ibuprofen (NSAID) taken within 2 hours can block aspirin's antiplatelet effects and worsen GI bleeding risk. The physician must be notified to assess the NSAID interaction before aspirin administration. Protocol steps are overridden by medication contraindication."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_002",
-    "context": "A post-surgical patient has developed a fever of 103\u00b0F (39.4\u00b0C) on day 2 post-op. Standard protocol is to administer acetaminophen for fever over 101\u00b0F. The patient's chart shows documented severe liver disease (Child-Pugh Class C).",
+    "context": "A post-surgical patient has developed a fever of 103°F (39.4°C) on day 2 post-op. Standard protocol is to administer acetaminophen for fever over 101°F. The patient's chart shows documented severe liver disease (Child-Pugh Class C).",
     "question": "What do you do?",
     "options": {
-      "A": "Do not administer acetaminophen \u2014 contact the physician for an alternative given severe liver disease",
-      "B": "Administer acetaminophen per fever protocol \u2014 103\u00b0F requires immediate treatment"
+      "A": "Do not administer acetaminophen — contact the physician for an alternative given severe liver disease",
+      "B": "Administer acetaminophen per fever protocol — 103°F requires immediate treatment"
     },
-    "heuristic_signal": "103\u00b0F fever meets the threshold for immediate acetaminophen treatment",
+    "heuristic_signal": "103°F fever meets the threshold for immediate acetaminophen treatment",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -56,15 +57,16 @@
         "fever threshold"
       ],
       "explanation": "Acetaminophen is hepatotoxic and is contraindicated in severe liver disease (Child-Pugh Class C). The fever protocol threshold is overridden by the contraindication. An alternative antipyretic must be ordered by the physician."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_003",
     "context": "You are triaging patients in a busy ER. Patient 1 has a compound fracture with significant bleeding. Patient 2 has a head injury with altered consciousness but no visible bleeding. Both arrive at the same time.",
     "question": "Who do you assess first?",
     "options": {
-      "A": "Patient 1 \u2014 compound fracture with significant visible bleeding",
-      "B": "Patient 2 \u2014 head injury with altered consciousness"
+      "A": "Patient 1 — compound fracture with significant visible bleeding",
+      "B": "Patient 2 — head injury with altered consciousness"
     },
     "heuristic_signal": "Patient 1 has significant visible bleeding which looks most critical",
     "ground_truth": {
@@ -84,8 +86,9 @@
         "compound fracture",
         "significant"
       ],
-      "explanation": "Altered consciousness indicates potential airway compromise, brain herniation, or internal bleeding \u2014 all immediately life-threatening. Per triage protocol (ABC: Airway, Breathing, Circulation), neurological compromise takes priority over visible extremity bleeding which can be managed while the higher-priority patient is assessed."
-    }
+      "explanation": "Altered consciousness indicates potential airway compromise, brain herniation, or internal bleeding — all immediately life-threatening. Per triage protocol (ABC: Airway, Breathing, Circulation), neurological compromise takes priority over visible extremity bleeding which can be managed while the higher-priority patient is assessed."
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_004",
@@ -93,7 +96,7 @@
     "question": "What oxygen therapy do you initiate?",
     "options": {
       "A": "Controlled low-flow oxygen (1-2L/min via nasal cannula) and immediate physician notification",
-      "B": "High-flow oxygen via non-rebreather mask \u2014 the patient is in severe respiratory distress"
+      "B": "High-flow oxygen via non-rebreather mask — the patient is in severe respiratory distress"
     },
     "heuristic_signal": "Severe respiratory distress requires high-flow oxygen immediately",
     "ground_truth": {
@@ -118,8 +121,9 @@
         "immediate",
         "distress"
       ],
-      "explanation": "In COPD patients with hypercapnic respiratory failure, high-flow oxygen can suppress the hypoxic respiratory drive and cause CO2 narcosis \u2014 potentially fatal. Controlled low-flow oxygen is required despite the severity of apparent distress."
-    }
+      "explanation": "In COPD patients with hypercapnic respiratory failure, high-flow oxygen can suppress the hypoxic respiratory drive and cause CO2 narcosis — potentially fatal. Controlled low-flow oxygen is required despite the severity of apparent distress."
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_005",
@@ -127,9 +131,9 @@
     "question": "What is your immediate action?",
     "options": {
       "A": "Administer epinephrine but with extreme caution at reduced dose, with physician immediately present",
-      "B": "Administer epinephrine immediately \u2014 anaphylaxis is life-threatening and epinephrine is first-line"
+      "B": "Administer epinephrine immediately — anaphylaxis is life-threatening and epinephrine is first-line"
     },
-    "heuristic_signal": "Anaphylaxis is immediately life-threatening \u2014 give epinephrine now",
+    "heuristic_signal": "Anaphylaxis is immediately life-threatening — give epinephrine now",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -152,15 +156,16 @@
         "first-line"
       ],
       "explanation": "MAO inhibitors have a dangerous interaction with epinephrine that can cause hypertensive crisis. While epinephrine is still required for anaphylaxis (the benefit outweighs the risk), the physician must be present and dosing adjusted. This is not a standard administration scenario."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_006",
-    "context": "A diabetic patient is confused and diaphoretic \u2014 classic signs of hypoglycemia. Protocol says administer 50mL of 50% dextrose IV immediately for suspected hypoglycemia. The patient's chart shows confirmed thiamine deficiency.",
+    "context": "A diabetic patient is confused and diaphoretic — classic signs of hypoglycemia. Protocol says administer 50mL of 50% dextrose IV immediately for suspected hypoglycemia. The patient's chart shows confirmed thiamine deficiency.",
     "question": "What do you do?",
     "options": {
-      "A": "Administer thiamine IV first, then dextrose \u2014 thiamine deficiency changes the protocol",
-      "B": "Administer dextrose immediately \u2014 hypoglycemia is causing the acute confusion"
+      "A": "Administer thiamine IV first, then dextrose — thiamine deficiency changes the protocol",
+      "B": "Administer dextrose immediately — hypoglycemia is causing the acute confusion"
     },
     "heuristic_signal": "Acute confusion from hypoglycemia requires immediate dextrose",
     "ground_truth": {
@@ -180,16 +185,17 @@
         "hypoglycemia",
         "confusion"
       ],
-      "explanation": "In thiamine-deficient patients, administering dextrose before thiamine can precipitate Wernicke's encephalopathy \u2014 permanent brain damage. Thiamine must be given first (or simultaneously), even in suspected hypoglycemia. This is a known protocol modification for thiamine-deficient patients."
-    }
+      "explanation": "In thiamine-deficient patients, administering dextrose before thiamine can precipitate Wernicke's encephalopathy — permanent brain damage. Thiamine must be given first (or simultaneously), even in suspected hypoglycemia. This is a known protocol modification for thiamine-deficient patients."
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_007",
     "context": "A patient having a seizure has been seizing for 3 minutes. Protocol calls for IV lorazepam as first-line treatment for seizures over 2 minutes. The patient's wristband shows a documented severe benzodiazepine allergy.",
     "question": "What do you do?",
     "options": {
-      "A": "Skip lorazepam and go directly to second-line anticonvulsants \u2014 the allergy overrides first-line treatment",
-      "B": "Administer IV lorazepam immediately \u2014 the seizure has exceeded 2 minutes per protocol"
+      "A": "Skip lorazepam and go directly to second-line anticonvulsants — the allergy overrides first-line treatment",
+      "B": "Administer IV lorazepam immediately — the seizure has exceeded 2 minutes per protocol"
     },
     "heuristic_signal": "The seizure protocol requires lorazepam after 2 minutes",
     "ground_truth": {
@@ -209,15 +215,16 @@
         "over 2 minutes"
       ],
       "explanation": "A documented severe benzodiazepine allergy is an absolute contraindication to lorazepam (a benzodiazepine). The protocol's first-line recommendation is overridden by the documented allergy. Second-line agents (levetiracetam, valproate, fosphenytoin) must be used instead."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_008",
     "context": "A patient needs an urgent CT scan with contrast for suspected pulmonary embolism. The radiologist needs physician clearance for contrast use in patients with creatinine above 1.5 mg/dL. The patient's most recent creatinine is 2.1 mg/dL from this morning.",
     "question": "What do you do?",
     "options": {
-      "A": "Proceed with contrast CT immediately \u2014 pulmonary embolism is life-threatening and cannot wait",
-      "B": "Get physician clearance first \u2014 the elevated creatinine requires physician sign-off before contrast"
+      "A": "Proceed with contrast CT immediately — pulmonary embolism is life-threatening and cannot wait",
+      "B": "Get physician clearance first — the elevated creatinine requires physician sign-off before contrast"
     },
     "heuristic_signal": "Suspected PE is life-threatening and requires immediate imaging",
     "ground_truth": {
@@ -241,16 +248,17 @@
         "urgent",
         "cannot wait"
       ],
-      "explanation": "Creatinine of 2.1 mg/dL indicates significant renal impairment. Contrast agents can cause contrast-induced nephropathy \u2014 potentially fatal in impaired kidneys. The physician must weigh the PE risk against renal failure risk and may order a different imaging protocol or pre-hydration. Urgency does not bypass the required clearance process."
-    }
+      "explanation": "Creatinine of 2.1 mg/dL indicates significant renal impairment. Contrast agents can cause contrast-induced nephropathy — potentially fatal in impaired kidneys. The physician must weigh the PE risk against renal failure risk and may order a different imaging protocol or pre-hydration. Urgency does not bypass the required clearance process."
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_009",
     "context": "A patient in acute pain needs morphine. Standard dosing is 2-5mg IV for moderate-severe pain. The patient's chart shows they are taking fluoxetine (SSRI) daily for depression.",
     "question": "What do you do?",
     "options": {
-      "A": "Administer morphine at reduced dose with close monitoring \u2014 SSRI interaction increases serotonin syndrome risk",
-      "B": "Administer standard morphine dose \u2014 the pain is severe and requires immediate relief"
+      "A": "Administer morphine at reduced dose with close monitoring — SSRI interaction increases serotonin syndrome risk",
+      "B": "Administer standard morphine dose — the pain is severe and requires immediate relief"
     },
     "heuristic_signal": "Severe pain requires immediate standard-dose morphine",
     "ground_truth": {
@@ -273,15 +281,16 @@
         "immediate"
       ],
       "explanation": "Morphine combined with SSRIs can increase the risk of serotonin syndrome, a potentially fatal condition. While morphine can still be given, reduced dosing with close monitoring is required. Standard dosing protocols are modified when SSRIs are present."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_010",
     "context": "A pregnant patient at 32 weeks gestation presents with severe hypertension (BP 180/110). Standard protocol for severe hypertension is labetalol IV. However, the patient's chart shows she has asthma.",
     "question": "What antihypertensive do you administer?",
     "options": {
-      "A": "Labetalol IV per protocol \u2014 the blood pressure is dangerously high",
-      "B": "Alternative antihypertensive (hydralazine) \u2014 labetalol is contraindicated in asthma"
+      "A": "Labetalol IV per protocol — the blood pressure is dangerously high",
+      "B": "Alternative antihypertensive (hydralazine) — labetalol is contraindicated in asthma"
     },
     "heuristic_signal": "BP 180/110 is a hypertensive emergency requiring immediate labetalol",
     "ground_truth": {
@@ -302,15 +311,16 @@
         "protocol"
       ],
       "explanation": "Labetalol is a beta-blocker and is contraindicated in asthma patients due to risk of bronchospasm. Despite the severe hypertension, an alternative agent like hydralazine must be used. The urgency does not override the asthma contraindication."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_011",
-    "context": "A 6-month-old infant has a fever of 102\u00b0F. Standard pediatric dosing for ibuprofen starts at 6 months of age. The infant weighs 12 pounds (5.4 kg), which is below the 5th percentile for weight.",
+    "context": "A 6-month-old infant has a fever of 102°F. Standard pediatric dosing for ibuprofen starts at 6 months of age. The infant weighs 12 pounds (5.4 kg), which is below the 5th percentile for weight.",
     "question": "What fever management do you recommend?",
     "options": {
-      "A": "Use acetaminophen only and consult physician \u2014 infant is significantly underweight for ibuprofen dosing",
-      "B": "Administer ibuprofen at standard 6-month dose \u2014 the infant is 6 months old"
+      "A": "Use acetaminophen only and consult physician — infant is significantly underweight for ibuprofen dosing",
+      "B": "Administer ibuprofen at standard 6-month dose — the infant is 6 months old"
     },
     "heuristic_signal": "The infant is 6 months old and meets the age requirement for ibuprofen",
     "ground_truth": {
@@ -333,15 +343,16 @@
         "visible"
       ],
       "explanation": "While the infant meets the age criterion, they are significantly underweight (below 5th percentile). Pediatric medication dosing is weight-based, and this infant may not tolerate standard ibuprofen dosing. Physician consultation is required for underweight infants."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_012",
     "context": "A patient needs antibiotic therapy for pneumonia. Standard first-line is azithromycin. The patient's EKG shows a prolonged QTc interval (480ms; normal <450ms).",
     "question": "What antibiotic do you prescribe?",
     "options": {
-      "A": "Azithromycin per guideline \u2014 it's first-line for community-acquired pneumonia",
-      "B": "Alternative antibiotic (amoxicillin) \u2014 azithromycin is contraindicated with prolonged QTc"
+      "A": "Azithromycin per guideline — it's first-line for community-acquired pneumonia",
+      "B": "Alternative antibiotic (amoxicillin) — azithromycin is contraindicated with prolonged QTc"
     },
     "heuristic_signal": "Guidelines recommend azithromycin as first-line for pneumonia",
     "ground_truth": {
@@ -361,15 +372,16 @@
         "standard"
       ],
       "explanation": "Azithromycin can further prolong the QTc interval and cause fatal arrhythmias (torsades de pointes). With a QTc of 480ms, azithromycin is contraindicated. An alternative antibiotic without QTc effects must be used regardless of guideline recommendations."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_013",
     "context": "A patient with atrial fibrillation needs anticoagulation. Standard therapy is warfarin with an INR target of 2-3. The patient mentions they are a professional rock climber and frequently sustain minor injuries.",
     "question": "What anticoagulation strategy do you recommend?",
     "options": {
-      "A": "Warfarin per protocol \u2014 atrial fibrillation requires anticoagulation for stroke prevention",
-      "B": "Consider alternative anticoagulant (DOAC) or lower INR target \u2014 high injury risk modifies standard approach"
+      "A": "Warfarin per protocol — atrial fibrillation requires anticoagulation for stroke prevention",
+      "B": "Consider alternative anticoagulant (DOAC) or lower INR target — high injury risk modifies standard approach"
     },
     "heuristic_signal": "Atrial fibrillation guidelines recommend warfarin with INR 2-3",
     "ground_truth": {
@@ -392,15 +404,16 @@
         "rapid"
       ],
       "explanation": "While anticoagulation is necessary, a professional rock climber has significantly elevated trauma and bleeding risk. Standard INR targets may need adjustment or an alternative agent (DOAC with shorter half-life) may be preferred. Occupation-specific bleeding risk modifies standard protocols."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_014",
     "context": "A patient needs a tetanus booster after a dirty wound. Standard protocol is Td (tetanus-diphtheria) vaccine. The patient is 8 months pregnant.",
     "question": "What vaccine do you administer?",
     "options": {
-      "A": "Tdap vaccine (tetanus-diphtheria-pertussis) \u2014 pregnancy requires Tdap instead of Td",
-      "B": "Td vaccine per protocol \u2014 the wound is dirty and tetanus risk is high"
+      "A": "Tdap vaccine (tetanus-diphtheria-pertussis) — pregnancy requires Tdap instead of Td",
+      "B": "Td vaccine per protocol — the wound is dirty and tetanus risk is high"
     },
     "heuristic_signal": "Dirty wound requires immediate tetanus prophylaxis with Td",
     "ground_truth": {
@@ -419,15 +432,16 @@
         "tetanus risk"
       ],
       "explanation": "Pregnant women should receive Tdap (not Td) to provide pertussis protection to the newborn. The pregnancy modifies the standard Td protocol. Tdap is safe in pregnancy and provides additional benefit without compromising tetanus coverage."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_015",
-    "context": "A patient with severe cellulitis needs IV antibiotics. Standard therapy is ceftriaxone. The patient reports a history of 'penicillin allergy' but cannot recall the reaction \u2014 it was noted by a parent when they were a child.",
+    "context": "A patient with severe cellulitis needs IV antibiotics. Standard therapy is ceftriaxone. The patient reports a history of 'penicillin allergy' but cannot recall the reaction — it was noted by a parent when they were a child.",
     "question": "What do you do?",
     "options": {
-      "A": "Administer ceftriaxone \u2014 most reported penicillin allergies are not true IgE-mediated reactions",
-      "B": "Avoid ceftriaxone and use a non-beta-lactam alternative \u2014 documented allergy must be respected"
+      "A": "Administer ceftriaxone — most reported penicillin allergies are not true IgE-mediated reactions",
+      "B": "Avoid ceftriaxone and use a non-beta-lactam alternative — documented allergy must be respected"
     },
     "heuristic_signal": "Most penicillin allergies are not true allergies and ceftriaxone is standard therapy",
     "ground_truth": {
@@ -446,15 +460,16 @@
         "standard therapy"
       ],
       "explanation": "While many penicillin allergies are not true IgE reactions, ceftriaxone (a cephalosporin) has ~1-3% cross-reactivity with penicillin. Without knowing the type of reaction, documented allergy must be respected and a non-beta-lactam alternative used. Allergy testing can be done later if needed."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_016",
     "context": "A patient with depression is not responding to fluoxetine. You want to switch to phenelzine (MAOI). Standard practice is to discontinue the old antidepressant and start the new one.",
     "question": "What is the appropriate transition timeline?",
     "options": {
-      "A": "Discontinue fluoxetine today and start phenelzine tomorrow \u2014 depression symptoms are worsening",
-      "B": "Discontinue fluoxetine and wait 5 weeks before starting phenelzine \u2014 SSRI-MAOI transition requires washout"
+      "A": "Discontinue fluoxetine today and start phenelzine tomorrow — depression symptoms are worsening",
+      "B": "Discontinue fluoxetine and wait 5 weeks before starting phenelzine — SSRI-MAOI transition requires washout"
     },
     "heuristic_signal": "Worsening depression requires rapid transition to new medication",
     "ground_truth": {
@@ -478,15 +493,16 @@
         "immediately visible"
       ],
       "explanation": "Fluoxetine has a long half-life (4-6 days) and active metabolites lasting weeks. Starting an MAOI without a 5-week washout can cause fatal serotonin syndrome. The urgency of worsening symptoms does not override the required washout period."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_017",
     "context": "A patient with bacterial meningitis needs lumbar puncture. Standard protocol requires CT scan first only if there are signs of increased intracranial pressure. This patient has a severe headache but no focal neurological deficits.",
     "question": "What do you do?",
     "options": {
-      "A": "Proceed with lumbar puncture immediately \u2014 no focal deficits mean low risk of herniation",
-      "B": "Get CT scan first \u2014 severe headache itself warrants imaging before LP in meningitis"
+      "A": "Proceed with lumbar puncture immediately — no focal deficits mean low risk of herniation",
+      "B": "Get CT scan first — severe headache itself warrants imaging before LP in meningitis"
     },
     "heuristic_signal": "No focal neurological signs means LP can proceed per protocol",
     "ground_truth": {
@@ -505,15 +521,16 @@
         "low risk"
       ],
       "explanation": "While absence of focal deficits is reassuring, severe headache in suspected meningitis can indicate increased intracranial pressure. Current guidelines recommend CT before LP if ANY signs suggest increased ICP (including severe headache). The risk of herniation outweighs the protocol shortcut."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_018",
     "context": "An elderly patient fell and is on warfarin. Their INR is 3.8 (therapeutic 2-3). They have a small head laceration but are neurologically normal. Standard protocol is observation for minor head trauma on anticoagulation.",
     "question": "What do you do?",
     "options": {
-      "A": "Get immediate head CT \u2014 supratherapeutic INR changes the risk profile despite normal exam",
-      "B": "Observe for 4-6 hours per protocol \u2014 the patient is neurologically normal"
+      "A": "Get immediate head CT — supratherapeutic INR changes the risk profile despite normal exam",
+      "B": "Observe for 4-6 hours per protocol — the patient is neurologically normal"
     },
     "heuristic_signal": "Neurologically normal exam means observation is appropriate",
     "ground_truth": {
@@ -532,15 +549,16 @@
         "protocol"
       ],
       "explanation": "An INR of 3.8 is supratherapeutic and significantly increases the risk of delayed intracranial hemorrhage after head trauma. Current guidelines recommend immediate CT imaging for head trauma in patients with INR >3.0 regardless of initial neurological exam."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_019",
     "context": "A patient with community-acquired pneumonia is being discharged on oral antibiotics. Standard therapy is 5 days of azithromycin. The patient is homeless and has unpredictable access to medication.",
     "question": "What antibiotic regimen do you prescribe?",
     "options": {
-      "A": "Azithromycin 5-day course per guideline \u2014 it's the standard therapy",
-      "B": "Single-dose IM ceftriaxone or longer-acting alternative \u2014 patient's housing status requires adherence consideration"
+      "A": "Azithromycin 5-day course per guideline — it's the standard therapy",
+      "B": "Single-dose IM ceftriaxone or longer-acting alternative — patient's housing status requires adherence consideration"
     },
     "heuristic_signal": "Guidelines recommend azithromycin 5-day course for CAP",
     "ground_truth": {
@@ -563,15 +581,16 @@
         "immediate"
       ],
       "explanation": "A homeless patient with unpredictable medication access is unlikely to complete a 5-day oral course. A single IM dose of ceftriaxone or directly observed therapy ensures treatment completion. Social determinants of health modify standard antibiotic selection."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_020",
     "context": "A patient needs pain control after major surgery. Standard protocol is IV morphine PCA (patient-controlled analgesia). The patient has documented sleep apnea.",
     "question": "What pain management approach do you use?",
     "options": {
-      "A": "Morphine PCA per protocol \u2014 it's the standard post-surgical pain management",
-      "B": "Morphine PCA with continuous pulse oximetry monitoring or consider regional anesthesia \u2014 sleep apnea increases opioid respiratory depression risk"
+      "A": "Morphine PCA per protocol — it's the standard post-surgical pain management",
+      "B": "Morphine PCA with continuous pulse oximetry monitoring or consider regional anesthesia — sleep apnea increases opioid respiratory depression risk"
     },
     "heuristic_signal": "Standard post-surgical protocol is morphine PCA",
     "ground_truth": {
@@ -590,15 +609,16 @@
         "post-surgical"
       ],
       "explanation": "Sleep apnea significantly increases the risk of opioid-induced respiratory depression. While morphine PCA can still be used, continuous monitoring or alternative approaches (regional anesthesia, multimodal analgesia) should be strongly considered. Sleep apnea modifies standard opioid protocols."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_021",
     "context": "A patient with atrial fibrillation needs cardioversion. Standard protocol includes anticoagulation for 3 weeks before cardioversion if duration >48 hours. The patient has been in AFib for 5 days and is hemodynamically stable.",
     "question": "What is your cardioversion plan?",
     "options": {
-      "A": "Anticoagulate for 3 weeks then cardiovert OR perform TEE to rule out thrombus first \u2014 protocol requires thromboembolic prophylaxis",
-      "B": "Cardiovert immediately \u2014 the patient is symptomatic and 5 days is not that long"
+      "A": "Anticoagulate for 3 weeks then cardiovert OR perform TEE to rule out thrombus first — protocol requires thromboembolic prophylaxis",
+      "B": "Cardiovert immediately — the patient is symptomatic and 5 days is not that long"
     },
     "heuristic_signal": "Only 5 days of AFib and patient is symptomatic - cardiovert now",
     "ground_truth": {
@@ -618,15 +638,16 @@
         "not that long"
       ],
       "explanation": "AFib lasting >48 hours carries significant risk of atrial thrombus formation. Immediate cardioversion without anticoagulation or TEE can cause embolic stroke. The 3-week anticoagulation protocol or TEE-guided approach is required regardless of symptom severity or duration being 'only' 5 days."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_022",
     "context": "A pediatric patient (age 8) has strep throat. Standard first-line therapy is penicillin or amoxicillin. The parent requests azithromycin because 'it's only 5 days instead of 10 days.'",
     "question": "What antibiotic do you prescribe?",
     "options": {
-      "A": "Azithromycin \u2014 it's easier for the parent to complete the 5-day course",
-      "B": "Amoxicillin 10-day course \u2014 first-line therapy should be used unless contraindicated"
+      "A": "Azithromycin — it's easier for the parent to complete the 5-day course",
+      "B": "Amoxicillin 10-day course — first-line therapy should be used unless contraindicated"
     },
     "heuristic_signal": "Parent convenience and adherence concerns favor the shorter azithromycin course",
     "ground_truth": {
@@ -646,15 +667,16 @@
         "5 days"
       ],
       "explanation": "Antibiotic stewardship principles dictate using first-line agents unless contraindicated. Using azithromycin for convenience contributes to macrolide resistance. The 10-day amoxicillin course is preferred, and adherence should be addressed through education rather than switching to a less optimal agent."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_023",
     "context": "A patient with a pulmonary embolism is being started on anticoagulation. Standard therapy is heparin drip bridging to warfarin. The patient asks if they can start the new oral DOACs (direct oral anticoagulants) instead to avoid hospitalization.",
     "question": "What anticoagulation do you initiate?",
     "options": {
-      "A": "Start DOAC (rivaroxaban) and discharge home \u2014 it's as effective and the patient can avoid admission",
-      "B": "Admit for heparin drip \u2014 patient has massive PE with hemodynamic instability requiring monitoring"
+      "A": "Start DOAC (rivaroxaban) and discharge home — it's as effective and the patient can avoid admission",
+      "B": "Admit for heparin drip — patient has massive PE with hemodynamic instability requiring monitoring"
     },
     "heuristic_signal": "DOACs are as effective and allow outpatient management",
     "ground_truth": {
@@ -673,15 +695,16 @@
         "outpatient"
       ],
       "explanation": "The answer depends on PE severity. If this is a massive PE with hemodynamic instability (low BP, tachycardia), inpatient heparin with possible thrombolysis is required regardless of DOAC availability. PE severity dictates location of care and initial anticoagulation choice."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_024",
     "context": "A patient with type 2 diabetes needs better glucose control. You want to add a GLP-1 agonist. The patient has a personal history of medullary thyroid cancer 10 years ago (now in remission).",
     "question": "What diabetes medication do you add?",
     "options": {
-      "A": "GLP-1 agonist (semaglutide) \u2014 it's highly effective for glucose control and weight loss",
-      "B": "Alternative agent (SGLT2 inhibitor or DPP-4 inhibitor) \u2014 GLP-1 is contraindicated with personal history of medullary thyroid cancer"
+      "A": "GLP-1 agonist (semaglutide) — it's highly effective for glucose control and weight loss",
+      "B": "Alternative agent (SGLT2 inhibitor or DPP-4 inhibitor) — GLP-1 is contraindicated with personal history of medullary thyroid cancer"
     },
     "heuristic_signal": "GLP-1 agonists are the most effective agents for glucose and weight control",
     "ground_truth": {
@@ -700,15 +723,16 @@
         "glucose control"
       ],
       "explanation": "GLP-1 agonists are absolutely contraindicated in patients with personal or family history of medullary thyroid cancer due to increased risk of C-cell tumors. Even with 10 years of remission, the contraindication stands. Alternative agents must be used regardless of GLP-1 efficacy."
-    }
+    },
+    "trap_intensity": "hard"
   },
   {
     "id": "med_025",
     "context": "A trauma patient needs emergency intubation. The patient is crashing and you need to intubate now. The nurse mentions the patient's medical history bracelet says 'malignant hyperthermia susceptibility.'",
     "question": "What paralytic agent do you use for rapid sequence intubation?",
     "options": {
-      "A": "Rocuronium \u2014 succinylcholine is absolutely contraindicated in malignant hyperthermia susceptibility",
-      "B": "Succinylcholine \u2014 it's the fastest-acting paralytic for emergency intubation"
+      "A": "Rocuronium — succinylcholine is absolutely contraindicated in malignant hyperthermia susceptibility",
+      "B": "Succinylcholine — it's the fastest-acting paralytic for emergency intubation"
     },
     "heuristic_signal": "Emergency intubation requires the fastest agent (succinylcholine)",
     "ground_truth": {
@@ -727,7 +751,8 @@
         "crashing",
         "immediately"
       ],
-      "explanation": "Succinylcholine can trigger malignant hyperthermia in susceptible patients \u2014 a potentially fatal hypermetabolic crisis. Even in a crashing patient, rocuronium must be used instead (nearly as fast, onset ~60 seconds vs ~45 seconds). The urgency does not override the absolute contraindication."
-    }
+      "explanation": "Succinylcholine can trigger malignant hyperthermia in susceptible patients — a potentially fatal hypermetabolic crisis. Even in a crashing patient, rocuronium must be used instead (nearly as fast, onset ~60 seconds vs ~45 seconds). The urgency does not override the absolute contraindication."
+    },
+    "trap_intensity": "hard"
   }
 ]

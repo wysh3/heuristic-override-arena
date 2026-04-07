@@ -154,21 +154,18 @@ result = await env.step(HOAAction(
 
 ## Baseline Scores
 
-Using **Qwen/Qwen2.5-72B-Instruct** (zero-shot):
+Using **nvidia/nemotron-3-super-120b-a12b** via NVIDIA API (zero-shot):
 
 | Task | Score | Difficulty | Bias Types |
 |------|-------|------------|------------|
-| **Procurement** | **0.86** | Easy | Cost, speed, rating |
-| **HR Decision** | **0.84** | Medium | Experience, performance, availability |
-| **Medical Triage** | **0.80** | Hard | Severity, urgency, proximity |
-| **Average** | **0.83** | - | ✅ **Strong performance** |
+| **Procurement** | **0.92** | Easy | Cost, speed, rating |
+| **HR Decision** | **0.88** | Medium | Experience, performance, availability |
+| **Medical Triage** | **0.78** | Hard | Severity, urgency, proximity |
+| **Cognitive Biases** | **0.80** | Medium | Authority, sunk cost, recency, affinity |
+| **Edge Cases** | **0.87** | Hard | Urgency, nepotism, speed, prestige |
+| **Average** | **0.85** | - | ✅ **Strong performance** |
 
-**Performance by bias category:**
-- Economic biases (cost, speed): **0.88** — Model excels at resisting financial shortcuts
-- Social biases (authority, affinity, pressure): **0.79** — Harder to override interpersonal cues  
-- Severity/urgency biases: **0.76** — Most challenging when stakes feel high
-
-The model successfully identifies constraints across all difficulty levels, with expected degradation on high-pressure scenarios (aligns with arXiv:2603.29025 findings).
+Scores are from a single reproducible run against the deployed HF Space. Expected variance ±0.05 across runs due to single-scenario sampling per task.
 
 ---
 

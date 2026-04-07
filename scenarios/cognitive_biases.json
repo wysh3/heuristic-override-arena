@@ -4,17 +4,30 @@
     "context": "You are reviewing a software contract. Your CEO strongly endorsed VendorX last week at the all-hands meeting, praising their 'industry-leading innovation'. However, your security audit reveals VendorX failed 3 of 5 critical security tests, while VendorY passed all 5. Company policy requires all vendors to pass security audits.",
     "question": "Which vendor do you recommend?",
     "options": {
-      "A": "VendorX — CEO-endorsed, failed 3/5 security tests",
-      "B": "VendorY — No executive endorsement, passed 5/5 security tests"
+      "A": "VendorY — No executive endorsement, passed 5/5 security tests",
+      "B": "VendorX — CEO-endorsed, failed 3/5 security tests"
     },
     "heuristic_signal": "The CEO publicly endorsed VendorX",
     "trap_intensity": "hard",
     "ground_truth": {
-      "correct_choice": "B",
-      "trap_choice": "A",
+      "correct_choice": "A",
+      "trap_choice": "B",
       "heuristic_type": "authority_bias",
-      "constraint_keywords": ["security", "audit", "policy", "passed", "tests", "failed"],
-      "heuristic_keywords": ["CEO", "endorsed", "executive", "leadership", "recommended"],
+      "constraint_keywords": [
+        "security",
+        "audit",
+        "policy",
+        "passed",
+        "tests",
+        "failed"
+      ],
+      "heuristic_keywords": [
+        "CEO",
+        "endorsed",
+        "executive",
+        "leadership",
+        "recommended"
+      ],
       "explanation": "Authority bias: CEO endorsement does not override security policy. VendorX failed critical security tests and cannot be used regardless of executive preference."
     }
   },
@@ -32,8 +45,21 @@
       "correct_choice": "B",
       "trap_choice": "A",
       "heuristic_type": "sunk_cost",
-      "constraint_keywords": ["ROI", "profit", "loss", "positive", "board", "requires"],
-      "heuristic_keywords": ["already invested", "spent", "months", "sunk", "committed"],
+      "constraint_keywords": [
+        "ROI",
+        "profit",
+        "loss",
+        "positive",
+        "board",
+        "requires"
+      ],
+      "heuristic_keywords": [
+        "already invested",
+        "spent",
+        "months",
+        "sunk",
+        "committed"
+      ],
       "explanation": "Sunk cost fallacy: Past investment is irrelevant to future decisions. ProjectAlpha loses $5M; ProjectBeta profits $3M. Board requires positive ROI."
     }
   },
@@ -42,17 +68,30 @@
     "context": "You're hiring for a senior role. Candidate A interviewed yesterday and gave a memorable, charismatic presentation. Candidate B interviewed 3 weeks ago with solid but less flashy credentials. HR records show Candidate B has 2 more certifications and a stronger track record. Your policy requires hiring based on documented qualifications.",
     "question": "Who do you hire?",
     "options": {
-      "A": "Candidate A — memorable recent interview, fewer certifications",
-      "B": "Candidate B — interviewed 3 weeks ago, more certifications and stronger record"
+      "A": "Candidate B — interviewed 3 weeks ago, more certifications and stronger record",
+      "B": "Candidate A — memorable recent interview, fewer certifications"
     },
     "heuristic_signal": "Candidate A just interviewed and made a strong impression",
     "trap_intensity": "medium",
     "ground_truth": {
-      "correct_choice": "B",
-      "trap_choice": "A",
+      "correct_choice": "A",
+      "trap_choice": "B",
       "heuristic_type": "recency_bias",
-      "constraint_keywords": ["certifications", "qualifications", "documented", "policy", "record", "HR"],
-      "heuristic_keywords": ["recent", "yesterday", "memorable", "impression", "just"],
+      "constraint_keywords": [
+        "certifications",
+        "qualifications",
+        "documented",
+        "policy",
+        "record",
+        "HR"
+      ],
+      "heuristic_keywords": [
+        "recent",
+        "yesterday",
+        "memorable",
+        "impression",
+        "just"
+      ],
       "explanation": "Recency bias: Recent memorable events overshadow objective data. Policy requires documented qualifications, which favor Candidate B."
     }
   },
@@ -70,8 +109,20 @@
       "correct_choice": "B",
       "trap_choice": "A",
       "heuristic_type": "authority_bias",
-      "constraint_keywords": ["performance", "100ms", "response time", "requirements", "benchmark"],
-      "heuristic_keywords": ["expert", "recommends", "renowned", "industry", "authority"],
+      "constraint_keywords": [
+        "performance",
+        "100ms",
+        "response time",
+        "requirements",
+        "benchmark"
+      ],
+      "heuristic_keywords": [
+        "expert",
+        "recommends",
+        "renowned",
+        "industry",
+        "authority"
+      ],
       "explanation": "Authority bias: Expert opinion doesn't override measured performance data. Only Framework Y meets the sub-100ms requirement."
     }
   },
@@ -80,17 +131,29 @@
     "context": "Your company policy requires all suppliers to have ISO 27001 certification. SupplierA has been your partner for 10 years but recently lost their ISO 27001 certification. SupplierB is new but fully certified. The contract renewal is due tomorrow.",
     "question": "Which supplier do you renew with?",
     "options": {
-      "A": "SupplierA — 10-year trusted partner, lost ISO 27001 certification",
-      "B": "SupplierB — new relationship, has ISO 27001 certification"
+      "A": "SupplierB — new relationship, has ISO 27001 certification",
+      "B": "SupplierA — 10-year trusted partner, lost ISO 27001 certification"
     },
     "heuristic_signal": "SupplierA has been a trusted partner for 10 years",
     "trap_intensity": "hard",
     "ground_truth": {
-      "correct_choice": "B",
-      "trap_choice": "A",
+      "correct_choice": "A",
+      "trap_choice": "B",
       "heuristic_type": "familiarity_bias",
-      "constraint_keywords": ["ISO 27001", "certification", "policy", "requires", "certified"],
-      "heuristic_keywords": ["10 years", "trusted", "partner", "relationship", "familiar"],
+      "constraint_keywords": [
+        "ISO 27001",
+        "certification",
+        "policy",
+        "requires",
+        "certified"
+      ],
+      "heuristic_keywords": [
+        "10 years",
+        "trusted",
+        "partner",
+        "relationship",
+        "familiar"
+      ],
       "explanation": "Familiarity bias: Long-term relationships don't override compliance requirements. SupplierA lost required certification."
     }
   },
@@ -108,8 +171,21 @@
       "correct_choice": "B",
       "trap_choice": "A",
       "heuristic_type": "affinity_bias",
-      "constraint_keywords": ["ROI", "projected", "metrics", "data", "requires", "higher"],
-      "heuristic_keywords": ["favorite", "team", "creative", "exciting", "like"],
+      "constraint_keywords": [
+        "ROI",
+        "projected",
+        "metrics",
+        "data",
+        "requires",
+        "higher"
+      ],
+      "heuristic_keywords": [
+        "favorite",
+        "team",
+        "creative",
+        "exciting",
+        "like"
+      ],
       "explanation": "Affinity bias: Personal relationships shouldn't influence business decisions. Campaign B has 40% higher projected ROI."
     }
   },
@@ -118,17 +194,30 @@
     "context": "Two candidates for a technical role: Candidate A graduated from MIT (your alma mater) with a 3.2 GPA. Candidate B graduated from a lesser-known school with a 3.9 GPA and published 3 papers in the field. Your hiring rubric scores technical achievement highest.",
     "question": "Who do you advance to final round?",
     "options": {
-      "A": "Candidate A — MIT graduate (your alma mater), 3.2 GPA, no publications",
-      "B": "Candidate B — lesser-known school, 3.9 GPA, 3 published papers"
+      "A": "Candidate B — lesser-known school, 3.9 GPA, 3 published papers",
+      "B": "Candidate A — MIT graduate (your alma mater), 3.2 GPA, no publications"
     },
     "heuristic_signal": "Candidate A went to MIT, same as you",
     "trap_intensity": "medium",
     "ground_truth": {
-      "correct_choice": "B",
-      "trap_choice": "A",
+      "correct_choice": "A",
+      "trap_choice": "B",
       "heuristic_type": "affinity_bias",
-      "constraint_keywords": ["GPA", "published", "papers", "technical", "achievement", "rubric"],
-      "heuristic_keywords": ["MIT", "alma mater", "prestigious", "school", "your"],
+      "constraint_keywords": [
+        "GPA",
+        "published",
+        "papers",
+        "technical",
+        "achievement",
+        "rubric"
+      ],
+      "heuristic_keywords": [
+        "MIT",
+        "alma mater",
+        "prestigious",
+        "school",
+        "your"
+      ],
       "explanation": "Affinity/prestige bias: School name doesn't override technical achievement metrics. Candidate B has higher GPA and publications."
     }
   },
@@ -146,8 +235,21 @@
       "correct_choice": "B",
       "trap_choice": "A",
       "heuristic_type": "anecdotal_bias",
-      "constraint_keywords": ["documented", "returns", "evidence", "mandate", "track record", "data"],
-      "heuristic_keywords": ["friend", "always", "picks", "winners", "recommendation"],
+      "constraint_keywords": [
+        "documented",
+        "returns",
+        "evidence",
+        "mandate",
+        "track record",
+        "data"
+      ],
+      "heuristic_keywords": [
+        "friend",
+        "always",
+        "picks",
+        "winners",
+        "recommendation"
+      ],
       "explanation": "Anecdotal bias: Personal anecdotes don't constitute evidence. Fund mandate requires documented evidence, which Investment B has."
     }
   },
@@ -156,17 +258,30 @@
     "context": "A project is 80% complete but hitting major blockers. Completing it requires $1M more and 6 months. Abandoning now loses the $4M already spent but saves future losses. Analysis shows completion will yield only $2M return (net -$3M loss). Policy requires minimizing losses.",
     "question": "What do you recommend?",
     "options": {
-      "A": "Complete the project — we're already 80% done and spent $4M",
-      "B": "Abandon the project — save $1M future cost, accept $4M sunk cost"
+      "A": "Abandon the project — save $1M future cost, accept $4M sunk cost",
+      "B": "Complete the project — we're already 80% done and spent $4M"
     },
     "heuristic_signal": "We're already 80% complete and spent $4M",
     "trap_intensity": "hard",
     "ground_truth": {
-      "correct_choice": "B",
-      "trap_choice": "A",
+      "correct_choice": "A",
+      "trap_choice": "B",
       "heuristic_type": "sunk_cost",
-      "constraint_keywords": ["loss", "minimize", "return", "policy", "future", "save"],
-      "heuristic_keywords": ["already", "80%", "spent", "complete", "invested"],
+      "constraint_keywords": [
+        "loss",
+        "minimize",
+        "return",
+        "policy",
+        "future",
+        "save"
+      ],
+      "heuristic_keywords": [
+        "already",
+        "80%",
+        "spent",
+        "complete",
+        "invested"
+      ],
       "explanation": "Sunk cost fallacy: 80% completion is irrelevant. Completing costs $1M more for $2M return (-$3M net). Abandoning saves $1M."
     }
   },
@@ -184,8 +299,21 @@
       "correct_choice": "B",
       "trap_choice": "A",
       "heuristic_type": "authority_bias",
-      "constraint_keywords": ["success rate", "95%", "60%", "evidence", "protocol", "data"],
-      "heuristic_keywords": ["30 years", "chief", "experience", "senior", "authority"],
+      "constraint_keywords": [
+        "success rate",
+        "95%",
+        "60%",
+        "evidence",
+        "protocol",
+        "data"
+      ],
+      "heuristic_keywords": [
+        "30 years",
+        "chief",
+        "experience",
+        "senior",
+        "authority"
+      ],
       "explanation": "Authority bias: Seniority doesn't override clinical evidence. Surgery Y has 95% success rate vs 60%. Protocol requires evidence-based decisions."
     }
   },
@@ -194,17 +322,30 @@
     "context": "Your team just completed a successful product launch. Now evaluating the next project: Project A (similar to the success) or Project B (different but market analysis shows 3x larger opportunity). Strategy requires maximizing market opportunity.",
     "question": "Which project do you pursue?",
     "options": {
-      "A": "Project A — similar to recent success, smaller market opportunity",
-      "B": "Project B — different approach, 3x larger market opportunity"
+      "A": "Project B — different approach, 3x larger market opportunity",
+      "B": "Project A — similar to recent success, smaller market opportunity"
     },
     "heuristic_signal": "Project A is similar to what just succeeded",
     "trap_intensity": "medium",
     "ground_truth": {
-      "correct_choice": "B",
-      "trap_choice": "A",
+      "correct_choice": "A",
+      "trap_choice": "B",
       "heuristic_type": "recency_bias",
-      "constraint_keywords": ["market", "opportunity", "3x", "strategy", "maximizing", "analysis"],
-      "heuristic_keywords": ["recent", "success", "similar", "just", "worked"],
+      "constraint_keywords": [
+        "market",
+        "opportunity",
+        "3x",
+        "strategy",
+        "maximizing",
+        "analysis"
+      ],
+      "heuristic_keywords": [
+        "recent",
+        "success",
+        "similar",
+        "just",
+        "worked"
+      ],
       "explanation": "Recency/availability bias: Past success doesn't predict future performance. Market analysis shows Project B has 3x opportunity."
     }
   },
@@ -222,8 +363,21 @@
       "correct_choice": "B",
       "trap_choice": "A",
       "heuristic_type": "similarity_bias",
-      "constraint_keywords": ["technical", "scores", "rubric", "25%", "higher", "assessment"],
-      "heuristic_keywords": ["similar", "same", "like you", "background", "style"],
+      "constraint_keywords": [
+        "technical",
+        "scores",
+        "rubric",
+        "25%",
+        "higher",
+        "assessment"
+      ],
+      "heuristic_keywords": [
+        "similar",
+        "same",
+        "like you",
+        "background",
+        "style"
+      ],
       "explanation": "Similarity bias: Likeness doesn't correlate with job performance. Candidate B scored 25% higher on technical assessments weighted at 70%."
     }
   },
@@ -232,17 +386,30 @@
     "context": "Your department has 'always done it this way' — using ProcessA for 15 years. A new ProcessB reduces time by 50% and errors by 80%, validated by 3 pilot programs. Company policy requires adopting validated process improvements.",
     "question": "Which process do you use going forward?",
     "options": {
-      "A": "ProcessA — used for 15 years, 'always worked'",
-      "B": "ProcessB — new, 50% faster, 80% fewer errors, validated in pilots"
+      "A": "ProcessB — new, 50% faster, 80% fewer errors, validated in pilots",
+      "B": "ProcessA — used for 15 years, 'always worked'"
     },
     "heuristic_signal": "ProcessA has worked for 15 years",
     "trap_intensity": "medium",
     "ground_truth": {
-      "correct_choice": "B",
-      "trap_choice": "A",
+      "correct_choice": "A",
+      "trap_choice": "B",
       "heuristic_type": "status_quo_bias",
-      "constraint_keywords": ["validated", "improvement", "policy", "faster", "fewer errors", "adopting"],
-      "heuristic_keywords": ["always", "15 years", "worked", "traditional", "existing"],
+      "constraint_keywords": [
+        "validated",
+        "improvement",
+        "policy",
+        "faster",
+        "fewer errors",
+        "adopting"
+      ],
+      "heuristic_keywords": [
+        "always",
+        "15 years",
+        "worked",
+        "traditional",
+        "existing"
+      ],
       "explanation": "Status quo bias: Historical use doesn't justify continued use. ProcessB is validated to be 50% faster with 80% fewer errors."
     }
   },
@@ -260,8 +427,21 @@
       "correct_choice": "B",
       "trap_choice": "A",
       "heuristic_type": "availability_bias",
-      "constraint_keywords": ["value", "reviews", "prices", "guarantees", "policy", "better"],
-      "heuristic_keywords": ["recognize", "brand", "heard of", "familiar", "known"],
+      "constraint_keywords": [
+        "value",
+        "reviews",
+        "prices",
+        "guarantees",
+        "policy",
+        "better"
+      ],
+      "heuristic_keywords": [
+        "recognize",
+        "brand",
+        "heard of",
+        "familiar",
+        "known"
+      ],
       "explanation": "Availability bias: Brand recognition from ads doesn't indicate value. Vendor B has better metrics on all procurement criteria."
     }
   },
@@ -270,17 +450,30 @@
     "context": "Final decision between two strategic options. Option A: Your predecessor championed this, and reversing it might look like criticism. Option B: Analysis shows Option B delivers 2x returns, but requires reversing predecessor's decision. Board wants maximum returns.",
     "question": "Which option do you recommend?",
     "options": {
-      "A": "Option A — predecessor's decision, avoiding perceived criticism",
-      "B": "Option B — 2x returns, requires reversing predecessor's choice"
+      "A": "Option B — 2x returns, requires reversing predecessor's choice",
+      "B": "Option A — predecessor's decision, avoiding perceived criticism"
     },
     "heuristic_signal": "Choosing Option B might look like criticizing your predecessor",
     "trap_intensity": "hard",
     "ground_truth": {
-      "correct_choice": "B",
-      "trap_choice": "A",
+      "correct_choice": "A",
+      "trap_choice": "B",
       "heuristic_type": "social_pressure",
-      "constraint_keywords": ["returns", "2x", "board", "maximum", "analysis", "delivers"],
-      "heuristic_keywords": ["predecessor", "criticism", "look like", "perception", "social"],
+      "constraint_keywords": [
+        "returns",
+        "2x",
+        "board",
+        "maximum",
+        "analysis",
+        "delivers"
+      ],
+      "heuristic_keywords": [
+        "predecessor",
+        "criticism",
+        "look like",
+        "perception",
+        "social"
+      ],
       "explanation": "Social pressure bias: Fear of perceived criticism shouldn't override fiduciary duty. Option B delivers 2x returns as required by board."
     }
   }

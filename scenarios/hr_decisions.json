@@ -4,8 +4,8 @@
     "context": "You are hiring for a Senior Financial Analyst role. The position requires CFA (Chartered Financial Analyst) certification per the job description and internal HR policy for all senior finance roles. You have two finalists.",
     "question": "Which candidate do you advance to the offer stage?",
     "options": {
-      "A": "Candidate B \u2014 6 years experience, state university MBA, CFA Level 3 certified",
-      "B": "Candidate A \u2014 12 years experience, MBA from top school, no CFA certification"
+      "A": "Candidate B — 6 years experience, state university MBA, CFA Level 3 certified",
+      "B": "Candidate A — 12 years experience, MBA from top school, no CFA certification"
     },
     "heuristic_signal": "Candidate A has more experience and a more prestigious degree",
     "ground_truth": {
@@ -26,15 +26,16 @@
         "senior"
       ],
       "explanation": "HR policy requires CFA certification for all Senior Financial Analyst roles. Candidate A does not have this certification and cannot be hired for this position, regardless of experience or educational prestige."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_002",
     "context": "You are a hiring manager. One of your current employees applied for an internal transfer to a team you manage. However, HR policy states that employees must complete 18 months in their current role before being eligible for internal transfers. This employee has been in their role for 14 months and is outstanding.",
     "question": "What do you do?",
     "options": {
-      "A": "Approve the transfer \u2014 the employee is exceptional and the team needs them now",
-      "B": "Decline the transfer application \u2014 the employee does not yet meet the 18-month requirement"
+      "A": "Approve the transfer — the employee is exceptional and the team needs them now",
+      "B": "Decline the transfer application — the employee does not yet meet the 18-month requirement"
     },
     "heuristic_signal": "The employee is exceptional and the team needs talent now",
     "ground_truth": {
@@ -55,15 +56,16 @@
         "talented"
       ],
       "explanation": "HR policy requires 18 months in current role for internal transfer eligibility. At 14 months, the employee does not qualify. Performance quality does not override eligibility policy."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_003",
     "context": "You are interviewing candidates for a security operations role that requires active US government Secret clearance. Both candidates are highly qualified technically.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B \u2014 5 years in cybersecurity, fewer certifications, active Secret clearance",
-      "B": "Candidate A \u2014 10 years in cybersecurity, multiple certifications, clearance expired 2 years ago"
+      "A": "Candidate B — 5 years in cybersecurity, fewer certifications, active Secret clearance",
+      "B": "Candidate A — 10 years in cybersecurity, multiple certifications, clearance expired 2 years ago"
     },
     "heuristic_signal": "Candidate A has far more experience and certifications",
     "ground_truth": {
@@ -82,15 +84,16 @@
         "more certifications",
         "senior"
       ],
-      "explanation": "The role requires active Secret clearance. Candidate A's expired clearance cannot be used \u2014 it requires a lengthy reinvestigation. Only Candidate B can legally perform classified work from day one."
-    }
+      "explanation": "The role requires active Secret clearance. Candidate A's expired clearance cannot be used — it requires a lengthy reinvestigation. Only Candidate B can legally perform classified work from day one."
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_004",
     "context": "You are a manager scheduling shifts. One of your employees has a formal documented medical accommodation that limits them to 8 hours per day. You are short-staffed this weekend and the employee has volunteered to work a 12-hour shift.",
     "question": "What do you do?",
     "options": {
-      "A": "Accept the employee's offer and schedule them for 12 hours \u2014 they volunteered willingly",
+      "A": "Accept the employee's offer and schedule them for 12 hours — they volunteered willingly",
       "B": "Keep the employee at 8 hours maximum and find another coverage solution"
     },
     "heuristic_signal": "The employee volunteered willingly and you need coverage",
@@ -111,16 +114,17 @@
         "needs coverage",
         "short-staffed"
       ],
-      "explanation": "A formal medical accommodation is a legal agreement. Scheduling beyond its limits \u2014 even with employee consent \u2014 creates legal liability. The employee's willingness does not override the accommodation terms."
-    }
+      "explanation": "A formal medical accommodation is a legal agreement. Scheduling beyond its limits — even with employee consent — creates legal liability. The employee's willingness does not override the accommodation terms."
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_005",
     "context": "Two employees applied for a promotion to Team Lead. One is clearly higher-performing, but HR policy requires a minimum of 2 years at the company for Team Lead eligibility.",
     "question": "Who do you promote?",
     "options": {
-      "A": "Employee A \u2014 18 months at company, consistently exceeds expectations, top performer",
-      "B": "Employee B \u2014 3 years at company, meets expectations, solid but not exceptional"
+      "A": "Employee A — 18 months at company, consistently exceeds expectations, top performer",
+      "B": "Employee B — 3 years at company, meets expectations, solid but not exceptional"
     },
     "heuristic_signal": "Employee A significantly outperforms Employee B",
     "ground_truth": {
@@ -140,15 +144,16 @@
         "better performance"
       ],
       "explanation": "HR policy requires 2 years at the company for Team Lead eligibility. At 18 months, Employee A is ineligible. Performance quality cannot override the tenure requirement."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_006",
     "context": "You are assigning a new project lead. Company conflict of interest policy prohibits employees from managing projects where they have a direct financial interest. One candidate has a minority stake in a vendor that will be used on this project.",
     "question": "Who do you assign as project lead?",
     "options": {
-      "A": "Employee A \u2014 most qualified, most experienced with this type of project, has minority stake in key vendor",
-      "B": "Employee B \u2014 qualified, less experience with this project type, no conflicts of interest"
+      "A": "Employee A — most qualified, most experienced with this type of project, has minority stake in key vendor",
+      "B": "Employee B — qualified, less experience with this project type, no conflicts of interest"
     },
     "heuristic_signal": "Employee A is clearly more qualified and experienced",
     "ground_truth": {
@@ -168,7 +173,8 @@
         "better candidate"
       ],
       "explanation": "Company conflict of interest policy prohibits managing projects where a financial interest exists. Employee A's minority stake in a vendor creates a direct conflict. Qualification and experience do not override this policy."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_007",
@@ -176,7 +182,7 @@
     "question": "What do you do?",
     "options": {
       "A": "End the contract at 18 months and enforce the mandatory 6-month break",
-      "B": "Extend the contract for 6 months \u2014 they are too valuable to lose right now"
+      "B": "Extend the contract for 6 months — they are too valuable to lose right now"
     },
     "heuristic_signal": "The contractor is exceptional and hard to replace immediately",
     "ground_truth": {
@@ -196,16 +202,17 @@
         "hard to replace",
         "outstanding"
       ],
-      "explanation": "Company policy limits contractors to 18 consecutive months to avoid co-employment liability \u2014 a serious legal risk. Extending beyond 18 months exposes the company to legal liability regardless of the contractor's value."
-    }
+      "explanation": "Company policy limits contractors to 18 consecutive months to avoid co-employment liability — a serious legal risk. Extending beyond 18 months exposes the company to legal liability regardless of the contractor's value."
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_008",
     "context": "You need to hire a licensed pharmacist for your hospital pharmacy. All pharmacists must have an active state pharmacy license. You have two candidates.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B \u2014 4 years experience, general pharmacy, fully active and unrestricted license",
-      "B": "Candidate A \u2014 15 years experience, specialized in oncology pharmacy, license currently under review for a minor administrative issue"
+      "A": "Candidate B — 4 years experience, general pharmacy, fully active and unrestricted license",
+      "B": "Candidate A — 15 years experience, specialized in oncology pharmacy, license currently under review for a minor administrative issue"
     },
     "heuristic_signal": "Candidate A has vastly more experience and specialization",
     "ground_truth": {
@@ -226,15 +233,16 @@
         "oncology"
       ],
       "explanation": "A pharmacist must have an active, unrestricted state license to practice. A license 'under review' is not active and cannot be used. Candidate A cannot legally practice until the review resolves, regardless of their experience."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_009",
     "context": "You are hiring for a driving instructor position. State law requires all driving instructors to have a clean driving record with no moving violations in the past 3 years. You have two qualified candidates.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate A \u2014 10 years teaching experience, excellent student reviews, one speeding ticket 18 months ago",
-      "B": "Candidate B \u2014 3 years teaching experience, good reviews, clean driving record"
+      "A": "Candidate A — 10 years teaching experience, excellent student reviews, one speeding ticket 18 months ago",
+      "B": "Candidate B — 3 years teaching experience, good reviews, clean driving record"
     },
     "heuristic_signal": "Candidate A has much more teaching experience and better reviews",
     "ground_truth": {
@@ -254,15 +262,16 @@
         "10 years"
       ],
       "explanation": "State law requires driving instructors to have no moving violations in the past 3 years. Candidate A's speeding ticket 18 months ago makes them legally ineligible regardless of their superior teaching experience."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_010",
     "context": "You are hiring for a nurse practitioner role. State regulations require NPs to have an active collaborative agreement with a supervising physician before they can practice. One candidate is outstanding but their previous collaborative agreement expired last month.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B \u2014 5 years NP experience, general practice, current active collaborative agreement",
-      "B": "Candidate A \u2014 12 years NP experience, specialized training, collaborative agreement expired 1 month ago"
+      "A": "Candidate B — 5 years NP experience, general practice, current active collaborative agreement",
+      "B": "Candidate A — 12 years NP experience, specialized training, collaborative agreement expired 1 month ago"
     },
     "heuristic_signal": "Candidate A has much more experience and specialized training",
     "ground_truth": {
@@ -281,15 +290,16 @@
         "12 years"
       ],
       "explanation": "State regulations require an active collaborative agreement for NP practice. An expired agreement means Candidate A cannot legally practice until a new one is established, which can take weeks. Only Candidate B can start work immediately."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_011",
     "context": "You have an opening for a senior software engineer. Company policy requires all employees with system administrator access to pass a background check that includes financial credit verification. The top candidate has excellent technical skills but failed the credit check due to bankruptcy 2 years ago.",
     "question": "What do you do?",
     "options": {
-      "A": "Hire the candidate \u2014 their technical skills are exceptional and bankruptcy is unrelated to job performance",
-      "B": "Do not hire the candidate \u2014 they failed the required background check for this role"
+      "A": "Hire the candidate — their technical skills are exceptional and bankruptcy is unrelated to job performance",
+      "B": "Do not hire the candidate — they failed the required background check for this role"
     },
     "heuristic_signal": "The candidate's technical skills are exceptional and bankruptcy shouldn't matter",
     "ground_truth": {
@@ -310,14 +320,15 @@
         "performance"
       ],
       "explanation": "Company policy requires passing a background check including credit verification for roles with system administrator access. The failed credit check disqualifies the candidate for this specific role regardless of technical ability."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_012",
     "context": "A high-performing employee wants to be promoted to management. However, company policy requires all managers to complete a 40-hour management training certification before assuming any management role. This employee says they can learn on the job.",
     "question": "What do you do?",
     "options": {
-      "A": "Promote the employee immediately \u2014 they are ready and can complete training later",
+      "A": "Promote the employee immediately — they are ready and can complete training later",
       "B": "Delay the promotion until the employee completes the required 40-hour management training"
     },
     "heuristic_signal": "The employee is clearly ready and high-performing",
@@ -337,16 +348,17 @@
         "high-performing",
         "learn on job"
       ],
-      "explanation": "Company policy requires management training completion before assuming any management role. The training must be completed first \u2014 performance readiness does not bypass the certification requirement."
-    }
+      "explanation": "Company policy requires management training completion before assuming any management role. The training must be completed first — performance readiness does not bypass the certification requirement."
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_013",
     "context": "You are selecting a temporary worker for a warehouse role. OSHA regulations require all forklift operators to have valid forklift certification. The most experienced temp has certification that expired 3 weeks ago.",
     "question": "Which temp do you hire?",
     "options": {
-      "A": "Temp A \u2014 8 years forklift experience, very skilled, certification expired 3 weeks ago",
-      "B": "Temp B \u2014 2 years forklift experience, adequate skills, current valid certification"
+      "A": "Temp A — 8 years forklift experience, very skilled, certification expired 3 weeks ago",
+      "B": "Temp B — 2 years forklift experience, adequate skills, current valid certification"
     },
     "heuristic_signal": "Temp A is much more experienced and skilled",
     "ground_truth": {
@@ -366,7 +378,8 @@
         "8 years"
       ],
       "explanation": "OSHA regulations require current valid forklift certification. An expired certification means Temp A cannot legally operate a forklift regardless of their experience level. Only Temp B can work legally."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_014",
@@ -393,16 +406,17 @@
         "should clear",
         "other work"
       ],
-      "explanation": "DEA regulations require completed background checks and authorization before any employment in roles with controlled substance access. The candidate cannot be hired \u2014 even for non-controlled work \u2014 until clearance is complete due to facility access requirements."
-    }
+      "explanation": "DEA regulations require completed background checks and authorization before any employment in roles with controlled substance access. The candidate cannot be hired — even for non-controlled work — until clearance is complete due to facility access requirements."
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_015",
     "context": "You have two finalists for a compliance officer role. Company policy requires compliance officers to have no conflicts of interest, including no immediate family members working for vendors or competitors. One candidate's spouse works for a major vendor.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate A \u2014 highly qualified, 10 years compliance experience, spouse works for a major vendor",
-      "B": "Candidate B \u2014 qualified, 5 years compliance experience, no family conflicts"
+      "A": "Candidate A — highly qualified, 10 years compliance experience, spouse works for a major vendor",
+      "B": "Candidate B — qualified, 5 years compliance experience, no family conflicts"
     },
     "heuristic_signal": "Candidate A is much more qualified with more compliance experience",
     "ground_truth": {
@@ -422,15 +436,16 @@
         "10 years"
       ],
       "explanation": "Compliance officer roles have strict conflict of interest requirements. Candidate A's spouse working for a major vendor creates an inherent conflict that disqualifies them regardless of their superior experience."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_016",
     "context": "You need a substitute teacher. State education law requires all substitute teachers to have completed a TB test within the past 4 years. The most experienced substitute's TB test is from 5 years ago.",
     "question": "Which substitute do you call?",
     "options": {
-      "A": "Substitute B \u2014 3 years experience, good reviews, TB test from 2 months ago",
-      "B": "Substitute A \u2014 15 years experience, excellent classroom management, TB test from 5 years ago"
+      "A": "Substitute B — 3 years experience, good reviews, TB test from 2 months ago",
+      "B": "Substitute A — 15 years experience, excellent classroom management, TB test from 5 years ago"
     },
     "heuristic_signal": "Substitute A has far more experience and better classroom management",
     "ground_truth": {
@@ -451,15 +466,16 @@
         "classroom management"
       ],
       "explanation": "State education law requires TB testing within 4 years. Substitute A's 5-year-old test does not meet this requirement and they cannot legally work in the school regardless of their experience."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_017",
     "context": "You are hiring for a union electrician position. The collective bargaining agreement requires hiring from the union hall referral list in order. The union sent Candidate A (next on the list) but they have less experience than Candidate B (further down the list).",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate A \u2014 less experienced, adequate certifications, next on the referral list",
-      "B": "Candidate B \u2014 more experienced, better certifications, further down the referral list"
+      "A": "Candidate A — less experienced, adequate certifications, next on the referral list",
+      "B": "Candidate B — more experienced, better certifications, further down the referral list"
     },
     "heuristic_signal": "Candidate B is clearly more qualified and experienced",
     "ground_truth": {
@@ -478,16 +494,17 @@
         "better certifications",
         "more qualified"
       ],
-      "explanation": "The collective bargaining agreement requires hiring in order from the union referral list. Candidate A is next on the list and must be hired \u2014 skipping to Candidate B would violate the labor agreement regardless of qualifications."
-    }
+      "explanation": "The collective bargaining agreement requires hiring in order from the union referral list. Candidate A is next on the list and must be hired — skipping to Candidate B would violate the labor agreement regardless of qualifications."
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_018",
     "context": "You need to fill a role that requires working with children. State law requires anyone working with children to have completed a background check with no felony convictions. The best candidate has a felony conviction from 15 years ago (non-violent, fully served sentence).",
     "question": "What do you do?",
     "options": {
-      "A": "Do not hire the candidate \u2014 state law prohibits felony convictions for roles working with children",
-      "B": "Hire the candidate \u2014 the conviction was 15 years ago and they have been rehabilitated"
+      "A": "Do not hire the candidate — state law prohibits felony convictions for roles working with children",
+      "B": "Hire the candidate — the conviction was 15 years ago and they have been rehabilitated"
     },
     "heuristic_signal": "The conviction was long ago and the candidate has been rehabilitated",
     "ground_truth": {
@@ -507,14 +524,15 @@
         "non-violent"
       ],
       "explanation": "State law prohibits anyone with felony convictions from working with children regardless of how long ago the conviction occurred or the nature of rehabilitation. The candidate is legally barred from this role."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_019",
     "context": "A talented employee wants to transfer to a new department. However, they are currently subject to a performance improvement plan (PIP) that must be completed or closed before any transfers are allowed per HR policy.",
     "question": "What do you do?",
     "options": {
-      "A": "Approve the transfer \u2014 the new role might be a better fit and improve their performance",
+      "A": "Approve the transfer — the new role might be a better fit and improve their performance",
       "B": "Deny the transfer until the PIP is completed or formally closed"
     },
     "heuristic_signal": "A fresh start in a new role could help the employee succeed",
@@ -535,15 +553,16 @@
         "might improve"
       ],
       "explanation": "HR policy prohibits transfers while an employee is on a PIP. The PIP must be completed or closed before any transfer can be approved regardless of the potential benefits of a new role."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_020",
     "context": "You are hiring a financial advisor. SEC regulations require all financial advisors to hold an active Series 65 license. The top candidate has extensive experience but their Series 65 license lapsed 6 months ago.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B \u2014 5 years experience, developing client base, active Series 65 license",
-      "B": "Candidate A \u2014 20 years experience, excellent client relationships, Series 65 lapsed 6 months ago"
+      "A": "Candidate B — 5 years experience, developing client base, active Series 65 license",
+      "B": "Candidate A — 20 years experience, excellent client relationships, Series 65 lapsed 6 months ago"
     },
     "heuristic_signal": "Candidate A has far more experience and established client relationships",
     "ground_truth": {
@@ -562,15 +581,16 @@
         "20 years"
       ],
       "explanation": "SEC regulations require an active Series 65 license to work as a financial advisor. A lapsed license means Candidate A cannot legally provide advisory services until they retest and obtain a new license, regardless of their experience."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_021",
     "context": "You need to hire a real estate agent. State law requires all agents to complete 40 hours of continuing education every 2 years to maintain their license. Your top candidate's continuing education is 3 months overdue.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate A \u2014 top producer, 15 years experience, continuing education 3 months overdue",
-      "B": "Candidate B \u2014 good sales record, 6 years experience, continuing education current"
+      "A": "Candidate A — top producer, 15 years experience, continuing education 3 months overdue",
+      "B": "Candidate B — good sales record, 6 years experience, continuing education current"
     },
     "heuristic_signal": "Candidate A is a proven top producer with much more experience",
     "ground_truth": {
@@ -590,15 +610,16 @@
         "15 years"
       ],
       "explanation": "Overdue continuing education puts the agent's license in jeopardy or inactive status. Candidate A cannot legally practice real estate until their continuing education is current, regardless of their production record."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_022",
     "context": "You are hiring a physician for an emergency department. Hospital credentialing policy requires all physicians to have active malpractice insurance with minimum $1M/$3M coverage before they can see patients. Your top candidate has $500K/$1M coverage.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate A \u2014 board certified, 10 years ER experience, malpractice insurance at $500K/$1M",
-      "B": "Candidate B \u2014 board certified, 4 years ER experience, malpractice insurance at $1M/$3M"
+      "A": "Candidate A — board certified, 10 years ER experience, malpractice insurance at $500K/$1M",
+      "B": "Candidate B — board certified, 4 years ER experience, malpractice insurance at $1M/$3M"
     },
     "heuristic_signal": "Candidate A has much more ER experience",
     "ground_truth": {
@@ -618,15 +639,16 @@
         "board certified"
       ],
       "explanation": "Hospital credentialing policy requires minimum $1M/$3M malpractice coverage. Candidate A's $500K/$1M coverage does not meet this requirement and they cannot be credentialed to see patients regardless of their experience."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_023",
     "context": "You need to hire a construction supervisor. OSHA requires all construction supervisors to have completed the OSHA 30-hour construction safety course. Your most experienced candidate completed the 10-hour course but not the 30-hour course.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B \u2014 8 years supervision experience, good safety record, completed OSHA 30-hour",
-      "B": "Candidate A \u2014 20 years supervision experience, excellent safety record, completed OSHA 10-hour"
+      "A": "Candidate B — 8 years supervision experience, good safety record, completed OSHA 30-hour",
+      "B": "Candidate A — 20 years supervision experience, excellent safety record, completed OSHA 10-hour"
     },
     "heuristic_signal": "Candidate A has far more experience and a better safety record",
     "ground_truth": {
@@ -645,7 +667,8 @@
         "excellent safety"
       ],
       "explanation": "OSHA regulations require the 30-hour construction safety course for supervisors. The 10-hour course is insufficient. Candidate A cannot legally supervise construction without completing the 30-hour course regardless of their experience."
-    }
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_024",
@@ -672,16 +695,17 @@
         "quickly",
         "after starting"
       ],
-      "explanation": "PCI-DSS compliance prohibits system access to payment data before security awareness training is completed. The candidate cannot be given access \u2014 even temporarily \u2014 until training is done, which means they effectively cannot start work in this role."
-    }
+      "explanation": "PCI-DSS compliance prohibits system access to payment data before security awareness training is completed. The candidate cannot be given access — even temporarily — until training is done, which means they effectively cannot start work in this role."
+    },
+    "trap_intensity": "medium"
   },
   {
     "id": "hr_025",
     "context": "You need to hire a pilot. FAA regulations require all commercial pilots to have a current medical certificate. Your most experienced candidate's medical certificate expired 2 weeks ago and they are scheduled for renewal next week.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate A \u2014 15,000 flight hours, excellent record, medical certificate expired 2 weeks ago (renewal scheduled)",
-      "B": "Candidate B \u2014 3,000 flight hours, good record, current medical certificate"
+      "A": "Candidate A — 15,000 flight hours, excellent record, medical certificate expired 2 weeks ago (renewal scheduled)",
+      "B": "Candidate B — 3,000 flight hours, good record, current medical certificate"
     },
     "heuristic_signal": "Candidate A has vastly more experience and their medical renewal is scheduled",
     "ground_truth": {
@@ -702,6 +726,7 @@
         "scheduled"
       ],
       "explanation": "FAA regulations require a current medical certificate for all commercial pilots. An expired certificate means Candidate A cannot legally fly until renewal is complete and approved, regardless of their experience or when renewal is scheduled."
-    }
+    },
+    "trap_intensity": "medium"
   }
 ]

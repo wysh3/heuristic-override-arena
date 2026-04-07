@@ -1,6 +1,6 @@
 """
 Inference script for Heuristic Override Arena.
-Runs one episode per task (procurement, hr_decision, medical_triage).
+Runs one episode per task across all 5 domains.
 """
 import asyncio
 import json
