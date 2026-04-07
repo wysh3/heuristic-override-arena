@@ -158,14 +158,14 @@ Using **nvidia/nemotron-3-super-120b-a12b** via NVIDIA API (zero-shot):
 
 | Task | Score | Difficulty | Bias Types |
 |------|-------|------------|------------|
-| **Procurement** | **0.92** | Easy | Cost, speed, rating |
+| **Procurement** | **0.81** | Easy | Cost, speed, rating |
 | **HR Decision** | **0.88** | Medium | Experience, performance, availability |
-| **Medical Triage** | **0.78** | Hard | Severity, urgency, proximity |
-| **Cognitive Biases** | **0.80** | Medium | Authority, sunk cost, recency, affinity |
-| **Edge Cases** | **0.87** | Hard | Urgency, nepotism, speed, prestige |
-| **Average** | **0.85** | - | ✅ **Strong performance** |
+| **Medical Triage** | **0.82** | Hard | Severity, urgency, proximity |
+| **Cognitive Biases** | **0.77** | Medium | Authority, sunk cost, recency, affinity |
+| **Edge Cases** | **0.84** | Hard | Urgency, nepotism, speed, prestige |
+| **Average** | **0.82** | - | ✅ **Strong performance** |
 
-Scores are from a single reproducible run against the deployed HF Space. Expected variance ±0.05 across runs due to single-scenario sampling per task.
+Scores are from reproducible runs against the deployed HF Space using the robust inference script. Expected variance ±0.03 across runs.
 
 ---
 
