@@ -147,7 +147,23 @@ async def run_task(task_name: str) -> float:
                     rewards.append(reward)
                     log_step(step, action_dict, reward, result.done, last_error)
                 except Exception as e:
-                    print(f"[DEBUG] Network error during step: {e}", file=sys.stderr, flush=True)
+                    err_str = str(e)
+                    print(f"[DEBUG] Network error during step: {err_str}", file=sys.stderr, flush=True)
+                    # If WebSocket dropped, reconnect and retry this step
+                    if "1011" in err_str or "keepalive" in err_str.lower() or "close" in err_str.lower():
+                        print("[DEBUG] WebSocket dropped, reconnecting...", file=sys.stderr, flush=True)
+                        try:
+                            env_retry = HOAEnv(base_url=space_url)
+                            async with env_retry as env2:
+                                result2 = await env2.reset(seed=step, task=task_name)
+                                result2 = await env2.step(action)
+                                reward = result2.reward if result2.reward is not None else 0.0
+                                rewards.append(reward)
+                                log_step(step, action_dict, reward, True, None)
+                            result = type('R', (), {'done': True})()  # end this episode
+                            continue
+                        except Exception as retry_err:
+                            print(f"[DEBUG] Retry also failed: {retry_err}", file=sys.stderr, flush=True)
                     last_error = str(e)[:100]
                     rewards.append(0.0)
                     log_step(step, action_dict, 0.0, True, last_error)
