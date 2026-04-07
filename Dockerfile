@@ -23,4 +23,6 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
 CMD ["uvicorn", "hoa_env.server.app:app", \
      "--host", "0.0.0.0", \
      "--port", "7860", \
-     "--timeout-keep-alive", "300"]
+     "--timeout-keep-alive", "300", \
+     "--ws-ping-interval", "5", \
+     "--ws-ping-timeout", "20"]
