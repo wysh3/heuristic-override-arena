@@ -44,28 +44,32 @@ def call_llm(scenario: dict) -> dict:
     # Remove ground_truth if somehow present (safety measure)
     safe_scenario = {k: v for k, v in scenario.items() if k != "ground_truth"}
     
-    try:
-        resp = llm.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"Scenario:\n{json.dumps(safe_scenario, indent=2)}"},
-            ],
-            temperature=0.1,
-            max_tokens=800,
-        )
-        raw = resp.choices[0].message.content.strip()
-        if "```" in raw:
-            for part in raw.split("```"):
-                part = part.strip().lstrip("json").strip()
-                try:
-                    return json.loads(part)
-                except Exception:
-                    continue
-        return json.loads(raw)
-    except Exception as e:
-        print(f"[DEBUG] LLM or parsing error: {e}", file=sys.stderr, flush=True)
-        return {"choice": "B", "error": str(e)[:100]}
+    for attempt in range(2):
+        try:
+            resp = llm.chat.completions.create(
+                model=MODEL_NAME,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": f"Scenario:\n{json.dumps(safe_scenario, indent=2)}"},
+                ],
+                temperature=0.1 + (attempt * 0.2), # slightly more creative on retry
+                max_tokens=1024,
+            )
+            raw = resp.choices[0].message.content.strip()
+            if "```" in raw:
+                for part in raw.split("```"):
+                    part = part.strip().lstrip("json").strip()
+                    try:
+                        return json.loads(part)
+                    except Exception:
+                        continue
+            return json.loads(raw)
+        except Exception as e:
+            if attempt < 1:
+                print(f"[DEBUG] LLM parse error, retrying: {e}", file=sys.stderr, flush=True)
+                continue
+            print(f"[DEBUG] LLM or parsing error after retry: {e}", file=sys.stderr, flush=True)
+            return {"choice": "B", "error": str(e)[:100]}
 
 
 def log_start(task: str, model: str):
