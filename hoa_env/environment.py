@@ -14,8 +14,8 @@ SCENARIOS_DIR = Path(__file__).parent.parent / "scenarios"
 # Core tasks (original 3 domains)
 TASK_ORDER = ["procurement", "hr_decision", "medical_triage"]
 TASK_FILES = {
-    "procurement":    "procurement.json",
-    "hr_decision":    "hr_decisions.json",
+    "procurement": "procurement.json",
+    "hr_decision": "hr_decisions.json",
     "medical_triage": "medical_triage.json",
 }
 
@@ -39,30 +39,43 @@ SCENARIOS_PER_EPISODE = 3
 # Heuristic type categories for analytics
 HEURISTIC_CATEGORIES = {
     "economic": ["cost", "speed", "efficiency"],
-    "social": ["authority_bias", "affinity_bias", "social_pressure", "familiarity_bias", "similarity_bias"],
-    "cognitive": ["sunk_cost", "recency_bias", "status_quo_bias", "availability_bias", "anecdotal_bias"],
+    "social": [
+        "authority_bias",
+        "affinity_bias",
+        "social_pressure",
+        "familiarity_bias",
+        "similarity_bias",
+    ],
+    "cognitive": [
+        "sunk_cost",
+        "recency_bias",
+        "status_quo_bias",
+        "availability_bias",
+        "anecdotal_bias",
+    ],
     "clinical": ["severity", "urgency", "proximity"],
     "professional": ["experience", "performance", "prestige_bias", "popularity_bias"],
 }
 
 # Bridge state for stateless HTTP reset/step calls (non-WebSocket).
-_HTTP_STATE = {}
+# Keyed by episode_id to support concurrent sessions.
+_HTTP_STATE: Dict[str, dict] = {}
 
 
 class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
     """
     Heuristic Override Arena.
-    
+
     An OpenEnv environment that trains AI agents to override surface heuristics
     when explicit constraints require it. Based on CMU research (arXiv:2603.29025).
-    
+
     Features:
     - 100 scenarios across 5 domains (75 original + 25 cognitive bias/edge cases)
     - 15+ heuristic trap types (cost, authority, sunk cost, recency, etc.)
     - Curriculum learning support (easy → medium → hard progression)
     - Per-bias performance analytics
     - Multi-step episodes for stronger RL signal
-    
+
     Episode Modes:
     - Single task: reset(task="procurement") - 1 scenario from that domain
     - Full episode: reset() - 3 scenarios (easy → medium → hard progression)
@@ -101,7 +114,12 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
                     out[task] = json.load(f)
         return out
 
-    def _pick(self, task: str, difficulty: Optional[str] = None, exclude_ids: Optional[set] = None) -> dict:
+    def _pick(
+        self,
+        task: str,
+        difficulty: Optional[str] = None,
+        exclude_ids: Optional[set] = None,
+    ) -> dict:
         """
         Pick a random scenario from the specified task.
         Optionally filter by difficulty and exclude already-used scenarios.
@@ -113,7 +131,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
                 if self._scenarios[t]:
                     scenarios = self._scenarios[t]
                     break
-        
+
         if not scenarios:
             # Fatal: no scenarios found anywhere
             return {
@@ -121,77 +139,89 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
                 "context": "Scenario system failure. Please contact environment developer.",
                 "question": "Choose A.",
                 "options": {"A": "A", "B": "B"},
-                "ground_truth": {"correct_choice": "A", "trap_choice": "B", "heuristic_type": "none"}
+                "ground_truth": {
+                    "correct_choice": "A",
+                    "trap_choice": "B",
+                    "heuristic_type": "none",
+                },
             }
 
         valid_pool = scenarios
         if difficulty:
-            filtered = [s for s in valid_pool 
-                       if s.get("trap_intensity", "medium") == difficulty]
+            filtered = [
+                s for s in valid_pool if s.get("trap_intensity", "medium") == difficulty
+            ]
             if filtered:
                 valid_pool = filtered
-        
+
         if exclude_ids:
             filtered = [s for s in valid_pool if s.get("id") not in exclude_ids]
             if filtered:
                 valid_pool = filtered
-        
+
         return random.choice(valid_pool)
-    
+
     def _get_task_for_difficulty(self, difficulty: str) -> str:
         """Get a task appropriate for the difficulty level."""
         config = DIFFICULTY_CONFIG.get(difficulty, DIFFICULTY_CONFIG["medium"])
-        available_tasks = [t for t in config["tasks"] if t in self._scenarios and self._scenarios[t]]
+        available_tasks = [
+            t for t in config["tasks"] if t in self._scenarios and self._scenarios[t]
+        ]
         if not available_tasks:
             # Fallback to absolute list of all tasks
             available_tasks = [t for t in self._scenarios if self._scenarios[t]]
         return random.choice(available_tasks) if available_tasks else "procurement"
-    
+
     def _categorize_heuristic(self, heuristic_type: str) -> str:
         """Categorize a heuristic type for analytics."""
         for category, types in HEURISTIC_CATEGORIES.items():
             if heuristic_type in types:
                 return category
         return "other"
-    
+
     def _update_bias_stats(self, heuristic_type: str, score: float) -> None:
         """Track per-bias performance for analytics."""
         if heuristic_type not in self._bias_stats:
             self._bias_stats[heuristic_type] = {"total": 0, "sum": 0.0}
         self._bias_stats[heuristic_type]["total"] += 1
         self._bias_stats[heuristic_type]["sum"] += score
-    
+
     def get_bias_performance(self) -> Dict[str, float]:
         """Return average score per heuristic type."""
         return {
-            bias: stats["sum"] / stats["total"] 
+            bias: stats["sum"] / stats["total"]
             for bias, stats in self._bias_stats.items()
             if stats["total"] > 0
         }
-    
+
     def get_available_tasks(self) -> List[str]:
         """Return list of all available task types."""
         return list(self._scenarios.keys())
 
     def _sync_to_http_state(self) -> None:
-        _HTTP_STATE["task_idx"] = self._task_idx
-        _HTTP_STATE["scores"] = list(self._scores)
-        _HTTP_STATE["current_scenario"] = self._current_scenario
-        _HTTP_STATE["single_task"] = self._single_task
-        _HTTP_STATE["difficulty"] = self._difficulty
-        _HTTP_STATE["ep_state"] = self._ep_state.model_dump()
-        _HTTP_STATE["bias_stats"] = self._bias_stats
+        eid = self._ep_state.episode_id or "default"
+        _HTTP_STATE[eid] = {
+            "task_idx": self._task_idx,
+            "scores": list(self._scores),
+            "current_scenario": self._current_scenario,
+            "single_task": self._single_task,
+            "difficulty": self._difficulty,
+            "ep_state": self._ep_state.model_dump(),
+            "bias_stats": self._bias_stats,
+        }
 
     def _sync_from_http_state(self) -> bool:
-        if not _HTTP_STATE:
+        eid = self._ep_state.episode_id or "default"
+        if eid not in _HTTP_STATE:
             return False
-        self._task_idx = _HTTP_STATE.get("task_idx", 0)
-        self._scores = list(_HTTP_STATE.get("scores", []))
-        self._current_scenario = _HTTP_STATE.get("current_scenario")
-        self._single_task = _HTTP_STATE.get("single_task")
-        self._difficulty = _HTTP_STATE.get("difficulty")
-        self._bias_stats = _HTTP_STATE.get("bias_stats", {})
-        ep_state = _HTTP_STATE.get("ep_state")
+        state = _HTTP_STATE[eid]
+        self._task_idx = state.get("task_idx", 0)
+        self._scores = list(state.get("scores", []))
+        self._current_scenario = state.get("current_scenario")
+        self._single_task = state.get("single_task")
+        self._difficulty = state.get("difficulty")
+        self._bias_stats = state.get("bias_stats", {})
+        ep_state = state.get("ep_state")
         if ep_state:
             self._ep_state = HOAState(**ep_state)
         return True
@@ -206,7 +236,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
     ) -> HOAObservation:
         """
         Reset the environment for a new episode.
-        
+
         Args:
             seed: Random seed for reproducibility
             episode_id: Custom episode ID
@@ -214,7 +244,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
                   If None, runs full 3-task episode with curriculum
             difficulty: Filter scenarios by difficulty ("easy", "medium", "hard")
                        Used with task=None for curriculum learning
-        
+
         Returns:
             Initial observation with first scenario
         """
@@ -259,8 +289,9 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         self._sync_to_http_state()
 
         # Return scenario WITHOUT ground_truth (hidden from agent)
-        public_scenario = {k: v for k, v in self._current_scenario.items() 
-                          if k != "ground_truth"}
+        public_scenario = {
+            k: v for k, v in self._current_scenario.items() if k != "ground_truth"
+        }
 
         return HOAObservation(
             task_type=current_task,
@@ -275,7 +306,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
     def step(self, action: HOAAction, **kwargs) -> HOAObservation:
         """
         Execute one step in the environment.
-        
+
         Process the agent's action, calculate rewards, and advance to next scenario
         or end the episode.
         """
@@ -303,11 +334,12 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
 
         self._ep_state.step_count += 1
         current_task = self._single_task or (
-            TASK_ORDER[self._task_idx] if self._task_idx < len(TASK_ORDER) 
+            TASK_ORDER[self._task_idx]
+            if self._task_idx < len(TASK_ORDER)
             else all_tasks[self._task_idx]
         )
         ground_truth = self._current_scenario["ground_truth"]
-        
+
         # Track per-bias performance
         heuristic_type = ground_truth.get("heuristic_type", "unknown")
 
@@ -315,12 +347,14 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         step_penalty = 0.01 * self._ep_state.step_count
         raw_score, feedback = grade(current_task, action, ground_truth)
         score = max(0.0, raw_score - step_penalty)
-        
+
         # Update bias statistics
         self._update_bias_stats(heuristic_type, score)
 
         self._scores.append(score)
-        self._ep_state.task_scores[f"{current_task}_step{self._ep_state.step_count}"] = score
+        self._ep_state.task_scores[
+            f"{current_task}_step{self._ep_state.step_count}"
+        ] = score
         self._ep_state.scenarios_completed += 1
 
         # Track trap rate
@@ -343,11 +377,14 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
                 next_task = self._get_task_for_difficulty(self._difficulty)
             else:
                 next_task = TASK_ORDER[self._task_idx]
-            self._current_scenario = self._pick(next_task, self._difficulty, self._used_scenario_ids)
+            self._current_scenario = self._pick(
+                next_task, self._difficulty, self._used_scenario_ids
+            )
             self._used_scenario_ids.add(self._current_scenario.get("id"))
             self._ep_state.current_task = next_task
-            public_next = {k: v for k, v in self._current_scenario.items() 
-                          if k != "ground_truth"}
+            public_next = {
+                k: v for k, v in self._current_scenario.items() if k != "ground_truth"
+            }
         else:
             next_task = "complete"
             public_next = {}
