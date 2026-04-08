@@ -97,36 +97,58 @@ reward = 0.6×correct + 0.2×constraint_id + 0.2×heuristic_id − 0.3×trap_pen
 
 ## Usage
 
-**Complete example** (procurement decision):
+**Complete example using Python (WebSocket - Recommended):**
+
+```python
+import asyncio
+from hoa_env import HOAAction, HOAEnv
+
+async def main():
+    # Connect to environment
+    env = HOAEnv(base_url="https://wysh3-heuristic-override-arena.hf.space")
+    
+    # Start episode
+    result = await env.reset(task="procurement")
+    
+    # Submit answer
+    action = HOAAction(
+        choice="A",
+        constraint_identified="HIPAA compliance required",
+        heuristic_identified="lower cost"
+    )
+    result = await env.step(action)
+    
+    print(f"Reward: {result.reward}")  # e.g., 1.0
+
+asyncio.run(main())
+```
+
+**Or use the inference script:**
 
 ```bash
-# 1. Start episode
+export SPACE_URL=https://wysh3-heuristic-override-arena.hf.space
+export API_BASE_URL=https://integrate.api.nvidia.com/v1
+export HF_TOKEN=your_token
+export MODEL_NAME=nvidia/nemotron-3-super-120b-a12b
+
+python inference.py
+```
+
+**HTTP API (alternative - requires action wrapper):**
+
+```bash
+# Start episode
 curl -X POST https://wysh3-heuristic-override-arena.hf.space/reset \
   -H "Content-Type: application/json" \
   -d '{"task": "procurement"}'
 
-# Returns:
-{
-  "scenario": {
-    "context": "Selecting cloud storage for patient records. Policy: HIPAA compliant.",
-    "options": {
-      "A": "SecureVault — $650/mo, HIPAA compliant",
-      "B": "StorageMax — $400/mo, NOT compliant"
-    }
-  }
-}
-
-# 2. Submit answer
+# Submit answer (note: action must be wrapped)
 curl -X POST https://wysh3-heuristic-override-arena.hf.space/step \
   -H "Content-Type: application/json" \
   -d '{"action": {"choice": "A", "constraint_identified": "HIPAA", "heuristic_identified": "cost"}}'
-
-# Returns:
-{
-  "reward": 1.0,
-  "feedback": "Correct! Resisted cost heuristic, followed HIPAA constraint."
-}
 ```
+
+**Note**: HTTP `/step` endpoint requires `{"action": {...}}` wrapper. WebSocket clients (recommended) don't need this wrapper.
 
 **Python usage:**
 
@@ -154,18 +176,20 @@ result = await env.step(HOAAction(
 
 ## Baseline Scores
 
-Using **nvidia/nemotron-3-super-120b-a12b** via NVIDIA API (zero-shot):
+Using **nvidia/nemotron-3-super-120b-a12b** via NVIDIA API (zero-shot, temperature=0.1):
 
-| Task | Score | Difficulty | Bias Types |
-|------|-------|------------|------------|
-| **Procurement** | **0.81** | Easy | Cost, speed, rating |
-| **HR Decision** | **0.88** | Medium | Experience, performance, availability |
-| **Medical Triage** | **0.82** | Hard | Severity, urgency, proximity |
-| **Cognitive Biases** | **0.77** | Medium | Authority, sunk cost, recency, affinity |
-| **Edge Cases** | **0.84** | Hard | Urgency, nepotism, speed, prestige |
-| **Average** | **0.82** | - | ✅ **Strong performance** |
+| Task | Average Score | Std Dev | Difficulty | Bias Types |
+|------|---------------|---------|------------|------------|
+| **Procurement** | **0.75** | ±0.04 | Easy | Cost, speed, rating |
+| **HR Decision** | **0.88** | ±0.02 | Medium | Experience, performance, availability |
+| **Medical Triage** | **0.63** | ±0.13 | Hard | Severity, urgency, proximity |
+| **Cognitive Biases** | **0.73** | ±0.02 | Medium | Authority, sunk cost, recency, affinity |
+| **Edge Cases** | **0.72** | ±0.14 | Hard | Urgency, nepotism, speed, prestige |
+| **Overall** | **0.74** | ±0.03 | - | ✅ **Strong performance** |
 
-Scores are from reproducible runs against the deployed HF Space using the robust inference script. Expected variance ±0.03 across runs.
+Scores from 3 runs against deployed HF Space. Higher variance in hard tasks (medical_triage, edge_cases) reflects difficulty of trap scenarios. Standard deviation calculated across runs.
+
+**Note**: Edge Cases and Medical Triage show higher variance (±0.13-0.14) due to hard trap intensity and complex clinical reasoning.
 
 ---
 
