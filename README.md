@@ -59,8 +59,9 @@ Per scenario, clipped to `[0, 1]`:
 reward = 0.6·correct_choice + 0.2·constraint_match + 0.2·heuristic_match − 0.3·fell_for_trap
 ```
 
-* `constraint_match` / `heuristic_match` = fraction of the scenario's ground-truth keywords (or known synonyms) found in the agent's `constraint_identified` / `heuristic_identified` text. A correct choice with no explanation therefore scores **0.6**; a correct choice that names every keyword scores **1.0**.
-* `fell_for_trap` is 1 if the agent chose the designated trap option. Because the score is clipped at 0, a trapped answer is worth at most ~0.1.
+* `constraint_match` / `heuristic_match` = fraction of the scenario's ground-truth keywords (or known synonyms) found in the first 400 characters of the agent's `constraint_identified` / `heuristic_identified` text. A correct choice with no explanation scores **0.6**; a correct choice that names every keyword scores **1.0**.
+* Explanation credit is only given with the correct choice, and long keyword dumps are truncated, so stuffing keywords cannot rescue a wrong or random answer (a random choice with a keyword dump scores about 0.35, versus 0.30 for a random choice with no explanation).
+* `fell_for_trap` is 1 if the agent chose the designated trap option. A wrong answer therefore scores 0.
 * There is no per-step penalty; the reward does not depend on the step index.
 * The observation includes the scenario's `heuristic_signal` (a one-line description of the tempting cue). This is a deliberate hint: it makes the task about *overriding* the cue rather than discovering it.
 
@@ -156,7 +157,7 @@ uv run uvicorn hoa_env.server.app:app --port 7860
 ### Tests
 
 ```bash
-uv run pytest        # 126 tests: grader, environment, HTTP bridge, API, scenario data integrity
+uv run pytest        # 128 tests: grader, environment, HTTP bridge, API, scenario data integrity
 uv run openenv validate .
 ```
 

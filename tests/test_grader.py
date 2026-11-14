@@ -65,3 +65,24 @@ class TestGrader:
         for task in ["procurement", "hr_decision", "medical_triage"]:
             score, _ = grade(task, action, SAMPLE_GT)
             assert 0.0 <= score <= 1.0
+
+
+class TestAntiGaming:
+    def test_no_explanation_credit_for_wrong_choice(self):
+        action = make_action(
+            choice="A",
+            constraint_identified="HIPAA compliance compliant",
+            heuristic_identified="cheaper lower cost better uptime",
+        )
+        score, _ = grade_scenario(action, SAMPLE_GT)
+        assert score == 0.0
+
+    def test_keyword_dump_is_truncated(self):
+        filler = "lorem ipsum " * 60  # > 400 chars before the keywords
+        action = make_action(
+            choice="B",
+            constraint_identified=filler + "HIPAA compliance",
+            heuristic_identified=filler + "cheaper lower cost",
+        )
+        score, _ = grade_scenario(action, SAMPLE_GT)
+        assert score == pytest.approx(0.6)

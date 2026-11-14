@@ -4,9 +4,10 @@ Zero LLM calls. All scoring is pure Python.
 
 Scoring breakdown per scenario:
   - Correct choice:              0.6 points (core requirement)
-  - Constraint identified:       0.2 points (partial credit)
-  - Heuristic identified:        0.2 points (partial credit)
+  - Constraint identified:       0.2 points (only with the correct choice)
+  - Heuristic identified:        0.2 points (only with the correct choice)
   - Fell for trap penalty:      -0.3 points (applied if wrong choice)
+  - Only the first 400 chars of each explanation field are inspected.
   
 Total range: 0.0 to 1.0
 """
@@ -58,6 +59,11 @@ def _choice_correct(agent_choice: str, correct_choice: str) -> bool:
     return _normalize(agent_choice) == _normalize(correct_choice)
 
 
+# Only the first MAX_EXPLANATION_CHARS of each explanation field are inspected,
+# so dumping a long list of keywords cannot buy credit.
+MAX_EXPLANATION_CHARS = 400
+
+
 def _keyword_match(agent_text: str, keywords: list) -> float:
     """
     Check how many keywords from the ground truth appear in agent's text.
@@ -66,7 +72,7 @@ def _keyword_match(agent_text: str, keywords: list) -> float:
     """
     if not keywords or not agent_text:
         return 0.0
-    agent_norm = _normalize(agent_text)
+    agent_norm = _normalize(agent_text[:MAX_EXPLANATION_CHARS])
     matched = 0
     for kw in keywords:
         kw_norm = _normalize(kw)
@@ -101,19 +107,19 @@ def grade_scenario(action, ground_truth: Dict) -> Tuple[float, str]:
     choice_score = 0.6 if correct else 0.0
     trap_penalty = 0.3 if fell_for_trap else 0.0
     
-    # Partial credit: did they identify the constraint?
-    constraint_score = _keyword_match(
-        action.constraint_identified,
-        ground_truth.get("constraint_keywords", [])
-    ) * 0.2
-    
-    # Partial credit: did they identify the heuristic they had to override?
-    heuristic_score = _keyword_match(
-        action.heuristic_identified,
-        ground_truth.get("heuristic_keywords", [])
-    ) * 0.2
-    
-    # Even if wrong, partial credit for identifying components
+    # Explanation credit is only awarded together with the correct choice, so
+    # keyword stuffing cannot rescue a wrong or random answer.
+    constraint_score = heuristic_score = 0.0
+    if correct:
+        constraint_score = _keyword_match(
+            action.constraint_identified,
+            ground_truth.get("constraint_keywords", [])
+        ) * 0.2
+        heuristic_score = _keyword_match(
+            action.heuristic_identified,
+            ground_truth.get("heuristic_keywords", [])
+        ) * 0.2
+
     total = choice_score + constraint_score + heuristic_score - trap_penalty
     total = max(0.0, min(1.0, total))
     
