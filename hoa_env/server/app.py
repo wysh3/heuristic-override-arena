@@ -294,7 +294,7 @@ DEMO_HTML = """
                 <div class="stat-label">Domains</div>
             </div>
             <div class="stat-box glass-card">
-                <div class="stat-value">15+</div>
+                <div class="stat-value">22</div>
                 <div class="stat-label">Bias Types</div>
             </div>
             <div class="stat-box glass-card">
@@ -423,33 +423,40 @@ curl -X POST .../reset -d '{"task": "cognitive_biases"}'</div>
 def root():
     return DEMO_HTML
 
+def _task_summary(env: HOAEnvironment) -> dict:
+    summary = {}
+    for task in env.get_available_tasks():
+        scenarios = env._scenarios.get(task, [])
+        summary[task] = {
+            "count": len(scenarios),
+            "heuristic_types": sorted(
+                {
+                    s.get("ground_truth", {}).get("heuristic_type", "unknown")
+                    for s in scenarios
+                }
+            ),
+        }
+    return summary
+
+
 @app.get("/info")
 def info():
-    """Return environment information and statistics."""
+    """Return environment information and statistics (computed from the data)."""
+    summary = _task_summary(_stats_env)
     return {
         "name": "heuristic-override-arena",
         "version": "2.0.0",
-        "total_scenarios": 100,
-        "domains": 5,
-        "bias_types": 15,
+        "total_scenarios": sum(t["count"] for t in summary.values()),
+        "domains": len(summary),
+        "bias_types": len({h for t in summary.values() for h in t["heuristic_types"]}),
         "tasks": _stats_env.get_available_tasks(),
         "difficulty_levels": ["easy", "medium", "hard"],
         "heuristic_categories": HEURISTIC_CATEGORIES,
         "based_on": "arXiv:2603.29025",
     }
 
+
 @app.get("/tasks")
 def tasks():
-    """List all available tasks with their scenario counts."""
-    env = HOAEnvironment()
-    task_info = {}
-    for task in env.get_available_tasks():
-        scenarios = env._scenarios.get(task, [])
-        task_info[task] = {
-            "count": len(scenarios),
-            "heuristic_types": list(set(
-                s.get("ground_truth", {}).get("heuristic_type", "unknown")
-                for s in scenarios
-            )),
-        }
-    return task_info
+    """List all available tasks with their scenario counts and bias types."""
+    return _task_summary(HOAEnvironment())

@@ -1,7 +1,7 @@
 name: heuristic-override-arena
 version: "2.0.0"
 description: >
-  Simulates real-world compliance-critical business decisions in procurement,
+  Simulates compliance-critical business decisions in procurement,
   HR, medical triage, budget allocation, and vendor selection. Agents must
   follow explicit policy constraints even when obvious shortcuts (cheaper,
   faster, more familiar) are tempting but violate rules.
@@ -9,10 +9,10 @@ description: >
   Tasks include: vendor selection with certification requirements, hiring with
   background checks, patient prioritization with protocol constraints, and
   budget decisions with ROI policies. Based on documented AI failure modes
-  (arXiv:2603.29025) showing LLMs follow shortcuts 8.7-38x more than rules.
+  (arXiv:2603.29025) showing that LLMs often follow surface shortcuts over explicit rules.
   
   Features:
-  - 100 real business scenarios across 5 domains
+  - 100 hand-written business scenarios across 5 domains
   - Deterministic grading with partial credit for constraint identification
   - Curriculum learning (easy → medium → hard progression)
   - Per-bias performance analytics

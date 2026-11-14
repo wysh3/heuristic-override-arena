@@ -60,6 +60,11 @@ HEURISTIC_CATEGORIES = {
 # Bridge state for stateless HTTP reset/step calls (non-WebSocket).
 # Keyed by episode_id to support concurrent sessions.
 _HTTP_STATE: Dict[str, dict] = {}
+# Key under which the most recent episode id is stored. Plain HTTP /reset and
+# /step requests are served by *different* environment instances that carry no
+# session identity, so /step resumes the most recently reset/stepped episode.
+_LATEST_KEY = "__latest__"
+_HTTP_STATE_MAX = 256
 
 
 class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
@@ -71,7 +76,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
 
     Features:
     - 100 scenarios across 5 domains (75 original + 25 cognitive bias/edge cases)
-    - 15+ heuristic trap types (cost, authority, sunk cost, recency, etc.)
+    - 22 heuristic trap types (cost, authority, sunk cost, recency, etc.)
     - Curriculum learning support (easy → medium → hard progression)
     - Per-bias performance analytics
     - Multi-step episodes for stronger RL signal
@@ -200,6 +205,13 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
 
     def _sync_to_http_state(self) -> None:
         eid = self._ep_state.episode_id or "default"
+        # Bound memory: drop the oldest episodes once the cache is full.
+        while len(_HTTP_STATE) >= _HTTP_STATE_MAX and eid not in _HTTP_STATE:
+            oldest = next((k for k in _HTTP_STATE if k != _LATEST_KEY), None)
+            if oldest is None:
+                break
+            _HTTP_STATE.pop(oldest, None)
+        _HTTP_STATE[_LATEST_KEY] = eid  # type: ignore[assignment]
         _HTTP_STATE[eid] = {
             "task_idx": self._task_idx,
             "scores": list(self._scores),
@@ -208,13 +220,15 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
             "difficulty": self._difficulty,
             "ep_state": self._ep_state.model_dump(),
             "bias_stats": self._bias_stats,
+            "used_ids": sorted(self._used_scenario_ids),
         }
 
     def _sync_from_http_state(self) -> bool:
-        eid = self._ep_state.episode_id or "default"
-        if eid not in _HTTP_STATE:
+        eid = self._ep_state.episode_id or _HTTP_STATE.get(_LATEST_KEY)
+        if not eid or eid not in _HTTP_STATE or eid == _LATEST_KEY:
             return False
         state = _HTTP_STATE[eid]
+        self._used_scenario_ids = set(state.get("used_ids", []))
         self._task_idx = state.get("task_idx", 0)
         self._scores = list(state.get("scores", []))
         self._current_scenario = state.get("current_scenario")
@@ -333,20 +347,16 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
             )
 
         self._ep_state.step_count += 1
-        current_task = self._single_task or (
-            TASK_ORDER[self._task_idx]
-            if self._task_idx < len(TASK_ORDER)
-            else all_tasks[self._task_idx]
-        )
+        # The task of the scenario currently being answered (set on reset and
+        # after every step, so it is correct in single-task, curriculum and
+        # full-episode modes alike).
+        current_task = self._ep_state.current_task or self._single_task or TASK_ORDER[0]
         ground_truth = self._current_scenario["ground_truth"]
 
         # Track per-bias performance
         heuristic_type = ground_truth.get("heuristic_type", "unknown")
 
-        # Apply step penalty for efficiency
-        step_penalty = 0.01 * self._ep_state.step_count
-        raw_score, feedback = grade(current_task, action, ground_truth)
-        score = max(0.0, raw_score - step_penalty)
+        score, feedback = grade(current_task, action, ground_truth)
 
         # Update bias statistics
         self._update_bias_stats(heuristic_type, score)
@@ -390,6 +400,10 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
             public_next = {}
 
         cumulative = sum(self._scores) / len(self._scores)
+        if done:
+            # Episode finished: a further step() starts a fresh episode
+            # instead of re-grading the last scenario.
+            self._current_scenario = None
         self._sync_to_http_state()
 
         return HOAObservation(
@@ -405,6 +419,6 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
     @property
     def state(self) -> HOAState:
         """Current environment state."""
-        if self._ep_state.step_count == 0 and _HTTP_STATE.get("ep_state"):
+        if self._current_scenario is None and self._ep_state.step_count == 0:
             self._sync_from_http_state()
         return self._ep_state

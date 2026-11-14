@@ -126,7 +126,7 @@ async def run_task(task_name: str) -> float:
 
     try:
         # 1. Try SPACE_URL
-        space_url = os.getenv("SPACE_URL", "").strip()
+        space_url = os.getenv("SPACE_URL", "").strip().rstrip("/")
 
         # 2. Try ENV_URL (alternative name used by some validators)
         if not space_url:
@@ -152,7 +152,8 @@ async def run_task(task_name: str) -> float:
                     file=sys.stderr,
                     flush=True,
                 )
-                env_client = HOAEnv(base_url="http://127.0.0.1:7860")
+                space_url = "http://127.0.0.1:7860"
+                env_client = HOAEnv(base_url=space_url)
             else:
                 # 4. Last resort: try to spin up Docker locally
                 print(
@@ -167,6 +168,7 @@ async def run_task(task_name: str) -> float:
                     env_client = await HOAEnv.from_docker_image(
                         LOCAL_IMAGE_NAME, provider=provider, container_port=7860
                     )
+                    space_url = getattr(env_client, "_ws_url", "") or "http://localhost:7860"
                 except Exception as docker_err:
                     print(
                         f"[DEBUG] Docker start failed: {docker_err}. Is port 7860 blocked?",
@@ -174,7 +176,8 @@ async def run_task(task_name: str) -> float:
                         flush=True,
                     )
                     # Fallback to localhost anyway as a hail mary
-                    env_client = HOAEnv(base_url="http://localhost:7860")
+                    space_url = "http://localhost:7860"
+                    env_client = HOAEnv(base_url=space_url)
 
         # We will loop exactly until step == 3 or done=True
         env = await env_client.__aenter__()

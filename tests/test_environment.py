@@ -121,3 +121,62 @@ class TestEnvironmentScoring:
         obs_trap = env3.step(make_action(choice=gt["trap_choice"]))
 
         assert obs_correct.reward > obs_trap.reward
+
+
+class TestHTTPStatelessBridge:
+    """Plain HTTP /reset + /step use separate env instances; state must carry over."""
+
+    def test_step_grades_the_scenario_returned_by_reset(self):
+        env_a = HOAEnvironment()
+        obs = env_a.reset(seed=7, task="procurement")
+        sid = obs.scenario["id"]
+        gt = env_a._current_scenario["ground_truth"]
+
+        env_b = HOAEnvironment()  # fresh instance, as HTTP /step would create
+        out = env_b.step(make_action(choice=gt["correct_choice"]))
+        assert out.reward > 0.5, f"graded wrong scenario (reset gave {sid})"
+        assert env_b._ep_state.episode_id == env_a._ep_state.episode_id
+        assert out.done is False
+        assert out.task_type == "procurement"
+
+    def test_http_episode_reaches_done(self):
+        HOAEnvironment().reset(seed=1, task="hr_decision")
+        done = False
+        for _ in range(SCENARIOS_PER_EPISODE):
+            out = HOAEnvironment().step(make_action(choice="A"))
+            done = out.done
+        assert done is True
+
+    def test_step_after_done_starts_new_episode(self):
+        env = HOAEnvironment()
+        env.reset(seed=3, task="procurement")
+        for _ in range(SCENARIOS_PER_EPISODE):
+            obs = env.step(make_action(choice="A"))
+        assert obs.done
+        obs = env.step(make_action(choice="A"))
+        assert obs.done is False
+        assert obs.reward is not None
+
+
+class TestRewardBounds:
+    def test_perfect_answer_can_reach_one(self):
+        env = HOAEnvironment()
+        env.reset(seed=5, task="procurement")
+        gt = env._current_scenario["ground_truth"]
+        obs = env.step(
+            make_action(
+                choice=gt["correct_choice"],
+                constraint=" ".join(gt["constraint_keywords"]),
+                heuristic=" ".join(gt["heuristic_keywords"]),
+            )
+        )
+        assert obs.reward == pytest.approx(1.0)
+
+    def test_reward_does_not_depend_on_step_index(self):
+        env = HOAEnvironment()
+        env.reset(seed=5, task="procurement")
+        rewards = []
+        for _ in range(SCENARIOS_PER_EPISODE):
+            gt = env._current_scenario["ground_truth"]
+            rewards.append(env.step(make_action(choice=gt["correct_choice"])).reward)
+        assert len(set(rewards)) == 1

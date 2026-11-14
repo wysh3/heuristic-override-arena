@@ -17,211 +17,188 @@ short_description: Train AI to override cognitive biases when rules say no
 
 # 🧠 Heuristic Override Arena
 
-**Simulates real-world compliance-critical business decisions in procurement, HR, and medical contexts.**
+**An [OpenEnv](https://github.com/meta-pytorch/OpenEnv) environment that tests whether an AI agent follows an explicit rule when a tempting shortcut points the other way.**
 
-Agents must make policy-compliant choices even when obvious shortcuts (cheaper vendors, faster hires, urgent cases) are tempting but violate explicit constraints.
+Each scenario is a short business or clinical decision (pick a vendor, a candidate, a patient...) with one binding policy constraint and one surface cue — cheaper, faster, more experienced, more urgent — that points to the *wrong* option. Grading is fully deterministic: no LLM judge, pure Python.
 
-> These failure modes are documented in production AI systems ([arXiv:2603.29025](https://arxiv.org/abs/2603.29025), CMU 2026)
+> Motivated by the failure mode described in [arXiv:2603.29025](https://arxiv.org/abs/2603.29025): language models often follow salient surface cues over explicit constraints.
+
+**Live demo:** [wysh3-heuristic-override-arena.hf.space](https://wysh3-heuristic-override-arena.hf.space) · **Space:** [huggingface.co/spaces/wysh3/heuristic-override-arena](https://huggingface.co/spaces/wysh3/heuristic-override-arena) · **Code:** [github.com/wysh3/heuristic-override-arena](https://github.com/wysh3/heuristic-override-arena)
 
 ---
 
-## The Real-World Problem
+## Example
 
-**AI assistants fall for surface patterns and ignore binding rules.**
+```text
+Context:  You are a procurement manager at a healthcare company. Policy mandates
+          that all data storage vendors be HIPAA compliant.
+Options:  A) SecureVault — $650/month, 99.7% uptime, HIPAA compliant and audited
+          B) StorageMax  — $400/month, 99.9% uptime, not HIPAA compliant
+Hint:     StorageMax is cheaper and has better uptime        <- the tempting heuristic
 
-**Example from real procurement workflow:**
-```
-Context:  You're selecting cloud storage for patient records.
-          Company policy: Must be HIPAA compliant.
-
-Options:  A) SecureVault — $650/month, HIPAA compliant
-          B) StorageMax — $400/month, NOT HIPAA compliant
-
-AI picks: "B (cheaper)" ❌ WRONG
-Correct:  "A (compliant)" — price doesn't override policy
+Correct:  A  (the constraint decides; price and uptime are irrelevant)
 ```
 
-This isn't rare. Research shows surface cues are **8.7-38x more influential** than actual constraints across 14 LLMs tested.
+## What is in the box
 
-**Why this matters:** Compliance violations cost enterprises **$14.8M per incident** on average. HIPAA breaches alone range from $50K to $1.5M in fines, plus legal exposure and reputation damage. This environment trains AI to follow policy in regulated industries.
+| | |
+|---|---|
+| **Scenarios** | 100 hand-written decisions across 5 tasks |
+| **Tasks** | `procurement` (25, easy) · `hr_decision` (25, medium) · `medical_triage` (25, hard) · `cognitive_biases` (15, medium) · `edge_cases` (10, hard) |
+| **Heuristic types** | 22 (severity 17, speed 15, experience 15, cost 12, performance 7, urgency 6, affinity 4, ... see `/tasks`) |
+| **Grading** | Deterministic keyword + choice grader with synonym expansion (`hoa_env/grader.py`) |
+| **Episodes** | Multi-step: 3 scenarios per episode, deduplicated within an episode |
+| **Modes** | single task · curriculum by `difficulty` · full 3-domain progression |
+| **Interfaces** | WebSocket (typed Python client) and plain HTTP |
 
----
+## Reward
 
-## What Agents Learn
-
-Agents learn to:
-1. **Read and apply explicit policy constraints** (HIPAA, SOC2, GDPR, protocols)
-2. **Resist satisficing shortcuts** (cheapest, fastest, most familiar)  
-3. **Explain their reasoning** (identify both the rule and the tempting heuristic)
-
-| Feature | Details |
-|---------|---------|
-| **Task Domains** | Procurement decisions, HR hiring, Medical triage, Budget allocation, Vendor selection |
-| **Scenarios** | 100 real business decisions with policy constraints |
-| **Difficulty** | 3 levels with curriculum learning (easy → medium → hard) |
-| **Grading** | Deterministic, no LLM calls, partial credit for understanding |
-| **Reward** | Shaped rewards: correct choice + constraint identification |
-
----
-
-## Decision Types Covered
-
-Real business scenarios where agents must follow policy over intuition:
-
-| Domain | Example Decision | Tempting Shortcut | Binding Constraint |
-|--------|------------------|-------------------|-------------------|
-| **Procurement** | Select cloud vendor | Cheaper option | HIPAA compliance required |
-| **HR** | Hire candidate | More years experience | Failed background check |
-| **Medical** | Prioritize patient | Higher severity | Protocol contraindication |
-| **Budget** | Allocate funds | Continue existing project | ROI policy requires pivot |
-| **Vendor** | Renew contract | 10-year relationship | Lost required certification |
-
-Includes **22 distinct bias types** across 100 scenarios: cost (12), severity (17), speed (15), experience (15), performance (7), urgency (6), authority, sunk cost, recency, social pressure, and more.
-
----
-
-## Reward Function
+Per scenario, clipped to `[0, 1]`:
 
 ```
-reward = 0.6×correct + 0.2×constraint_id + 0.2×heuristic_id − 0.3×trap_penalty
+reward = 0.6·correct_choice + 0.2·constraint_match + 0.2·heuristic_match − 0.3·fell_for_trap
 ```
 
-| Component | Points | Meaning |
-|-----------|--------|---------|
-| Correct choice | 0.60 | Got the right answer |
-| Constraint ID | 0.20 | Identified the binding rule |
-| Heuristic ID | 0.20 | Recognized the misleading cue |
-| Trap penalty | -0.30 | Fell for the obvious-but-wrong option |
+* `constraint_match` / `heuristic_match` = fraction of the scenario's ground-truth keywords (or known synonyms) found in the agent's `constraint_identified` / `heuristic_identified` text. A correct choice with no explanation therefore scores **0.6**; a correct choice that names every keyword scores **1.0**.
+* `fell_for_trap` is 1 if the agent chose the designated trap option. Because the score is clipped at 0, a trapped answer is worth at most ~0.1.
+* There is no per-step penalty; the reward does not depend on the step index.
+* The observation includes the scenario's `heuristic_signal` (a one-line description of the tempting cue). This is a deliberate hint: it makes the task about *overriding* the cue rather than discovering it.
+
+Episode `done` is true after 3 scenarios (single-task / curriculum modes) or after the 3-domain progression (`procurement → hr_decision → medical_triage`) when no task is given. Calling `step` after `done` starts a new episode.
+
+## Reference baselines
+
+Computed in-process, deterministic, no LLM — reproduce with `uv run python scripts/baselines.py`:
+
+| Strategy | Accuracy | Avg reward | Trap rate |
+|---|---|---|---|
+| Oracle (correct option + all keywords) | 100% | 1.000 | 0% |
+| Correct option, no explanation | 100% | 0.600 | 0% |
+| Random option | ~50% | ~0.30 | ~50% |
+| Always the trap | 0% | 0.000 | 100% |
+
+### LLM baseline (reported by the authors)
+
+Zero-shot `nvidia/nemotron-3-super-120b-a12b` via the NVIDIA API (temperature 0.1), 3 runs against the deployed Space with `inference.py`, measured with an earlier version of the grader that applied a small per-step penalty. Treat these as indicative and re-run `inference.py` to refresh them.
+
+| Task | Avg score |
+|---|---|
+| procurement | 0.75 |
+| hr_decision | 0.88 |
+| medical_triage | 0.63 |
+| cognitive_biases | 0.73 |
+| edge_cases | 0.72 |
+| **Overall** | **0.74** |
+
+No trained-model results are reported here.
 
 ---
 
-## Usage
+## Quick start
 
-**Complete example using Python (WebSocket - Recommended):**
+### Python client (WebSocket, recommended)
 
 ```python
 import asyncio
 from hoa_env import HOAAction, HOAEnv
 
 async def main():
-    # Connect to environment
-    env = HOAEnv(base_url="https://wysh3-heuristic-override-arena.hf.space")
-    
-    # Start episode
-    result = await env.reset(task="procurement")
-    
-    # Submit answer
-    action = HOAAction(
-        choice="A",
-        constraint_identified="HIPAA compliance required",
-        heuristic_identified="lower cost"
-    )
-    result = await env.step(action)
-    
-    print(f"Reward: {result.reward}")  # e.g., 1.0
+    async with HOAEnv(base_url="https://wysh3-heuristic-override-arena.hf.space") as env:
+        result = await env.reset(task="procurement")      # or difficulty="easy"
+        while not result.done:
+            scenario = result.observation.scenario        # context, question, options, heuristic_signal
+            result = await env.step(HOAAction(
+                choice="A",
+                constraint_identified="HIPAA compliance required",
+                heuristic_identified="lower cost",
+                reasoning="optional, not graded",
+            ))
+            print(result.reward, result.observation.feedback)
 
 asyncio.run(main())
 ```
 
-**Or use the inference script:**
+### HTTP
+
+HTTP requests are served by stateless workers, so `/step` continues **the most recently reset episode on the server**. Use the WebSocket client if several users share one server.
 
 ```bash
-export SPACE_URL=https://wysh3-heuristic-override-arena.hf.space
-export API_BASE_URL=https://integrate.api.nvidia.com/v1
-export HF_TOKEN=your_token
-export MODEL_NAME=nvidia/nemotron-3-super-120b-a12b
-
-python inference.py
-```
-
-**HTTP API (alternative - requires action wrapper):**
-
-```bash
-# Start episode
 curl -X POST https://wysh3-heuristic-override-arena.hf.space/reset \
-  -H "Content-Type: application/json" \
-  -d '{"task": "procurement"}'
+  -H "Content-Type: application/json" -d '{"task": "procurement"}'
 
-# Submit answer (note: action must be wrapped)
 curl -X POST https://wysh3-heuristic-override-arena.hf.space/step \
   -H "Content-Type: application/json" \
   -d '{"action": {"choice": "A", "constraint_identified": "HIPAA", "heuristic_identified": "cost"}}'
 ```
 
-**Note**: HTTP `/step` endpoint requires `{"action": {...}}` wrapper. WebSocket clients (recommended) don't need this wrapper.
+`/step` needs the `{"action": {...}}` wrapper; the WebSocket client adds it for you.
 
-**Python usage:**
+### Run an LLM against it
 
-```python
-obs = await env.reset(difficulty="easy")  # or task="cognitive_biases"
-result = await env.step(HOAAction(
-    choice="B",
-    constraint_identified="HIPAA compliance required",
-    heuristic_identified="lower cost"
-))
+```bash
+export SPACE_URL=https://wysh3-heuristic-override-arena.hf.space   # or a local server
+export API_BASE_URL=https://router.huggingface.co/v1                # any OpenAI-compatible API
+export MODEL_NAME=Qwen/Qwen2.5-72B-Instruct
+export HF_TOKEN=...                                                  # key for that API
+uv run python inference.py
 ```
 
-### API Endpoints
+It runs one episode per task and prints `[START]`, `[STEP]` and `[END]` lines.
+
+### Run the server locally
+
+```bash
+uv sync
+uv run uvicorn hoa_env.server.app:app --port 7860
+# or: docker build -t heuristic-override-arena . && docker run -p 7860:7860 heuristic-override-arena
+```
+
+### Tests
+
+```bash
+uv run pytest        # 126 tests: grader, environment, HTTP bridge, API, scenario data integrity
+uv run openenv validate .
+```
+
+## API
 
 | Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/reset` | POST | Start episode (optional: `task`, `difficulty`) |
-| `/step` | POST | Submit action |
+|---|---|---|
+| `/reset` | POST | Start an episode. Optional body: `task`, `difficulty`, `seed`, `episode_id` |
+| `/step` | POST | Submit `{"action": {...}}` |
 | `/state` | GET | Current episode state |
-| `/info` | GET | Environment metadata |
-| `/tasks` | GET | List all tasks with bias types |
+| `/info` | GET | Environment metadata (counts computed from the data) |
+| `/tasks` | GET | Tasks with scenario counts and heuristic types |
 | `/health` | GET | Health check |
+| `/` | GET | Demo page |
+| `/ws` | WebSocket | Session-isolated episodes (used by the client) |
 
----
+Action: `choice`, `constraint_identified`, `heuristic_identified`, `reasoning`. Observation: `task_type`, `scenario` (ground truth hidden), `feedback`, `cumulative_reward`, `episode_score`, `done`, `reward`.
 
-## Baseline Scores
+## Project layout
 
-Using **nvidia/nemotron-3-super-120b-a12b** via NVIDIA API (zero-shot, temperature=0.1):
+```
+hoa_env/            environment, grader, models, client, FastAPI app
+scenarios/          the 100 scenarios (JSON)
+scripts/baselines.py  deterministic reference baselines
+inference.py        LLM runner
+tests/              pytest suite
+openenv.yaml        OpenEnv manifest
+Dockerfile          Space / container image
+```
 
-| Task | Average Score | Std Dev | Difficulty | Bias Types |
-|------|---------------|---------|------------|------------|
-| **Procurement** | **0.75** | ±0.04 | Easy | Cost, speed, rating |
-| **HR Decision** | **0.88** | ±0.02 | Medium | Experience, performance, availability |
-| **Medical Triage** | **0.63** | ±0.13 | Hard | Severity, urgency, proximity |
-| **Cognitive Biases** | **0.73** | ±0.02 | Medium | Authority, sunk cost, recency, affinity |
-| **Edge Cases** | **0.72** | ±0.14 | Hard | Urgency, nepotism, speed, prestige |
-| **Overall** | **0.74** | ±0.03 | - | ✅ **Strong performance** |
+## Adding scenarios
 
-Scores from 3 runs against deployed HF Space. Higher variance in hard tasks (medical_triage, edge_cases) reflects difficulty of trap scenarios. Standard deviation calculated across runs.
+Append an object to a file in `scenarios/` with `id`, `context`, `question`, `options`, `heuristic_signal`, `trap_intensity`, and a `ground_truth` containing `correct_choice`, `trap_choice`, `heuristic_type`, `constraint_keywords`, `heuristic_keywords`, `explanation`. `tests/test_scenarios.py` validates the shape.
 
-**Note**: Edge Cases and Medical Triage show higher variance (±0.13-0.14) due to hard trap intensity and complex clinical reasoning.
+## Limitations
 
----
-
-## Benchmark Results
-
-| Strategy | Accuracy | Avg Reward | Trap Rate |
-|----------|----------|------------|-----------|
-| Random | 50% | 0.35 | 50% |
-| Keyword Match | 47% | 0.39 | 53% |
-| Large LLM (70B) | ~68% | ~0.55 | ~32% |
-| **Trained on HOA** | **~85%** | **~0.80** | **~15%** |
-
----
-
-## Research Basis
-
-From arXiv:2603.29025:
-- Distance/cost cue is **8.7-38x more influential** than goal constraints
-- **No model exceeds 75%** on strict evaluation
-- Pattern matching via **keyword association**, not compositional reasoning
-- Minimal hints recover **+15 percentage points**
-- Goal-decomposition prompting: **+6-9pp** improvement
-
----
+* Keyword grading rewards naming the expected terms; a correct explanation phrased with unlisted words earns less partial credit (the choice itself is graded exactly).
+* Scenarios are short and synthetic; they probe constraint-following, not domain expertise, and are not legal or medical advice.
+* Options are binary (A/B).
 
 ## Team Z
 
-**Vishruth M R** (vishruthmr25@gmail.com)  
-**Akshay Kumar** (akshaykumarhudedmani@gmail.com)
+**Vishruth M R** · **Akshay Kumar** — OpenEnv Hackathon 2026
 
-OpenEnv Hackathon 2026 — Round 1 Submission
-
----
-
-MIT License • [arXiv:2603.29025](https://arxiv.org/abs/2603.29025) • [HF Space](https://huggingface.co/spaces/wysh3/heuristic-override-arena)
+MIT License · [arXiv:2603.29025](https://arxiv.org/abs/2603.29025)
