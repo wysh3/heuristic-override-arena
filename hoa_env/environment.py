@@ -67,6 +67,13 @@ _LATEST_KEY = "__latest__"
 _HTTP_STATE_MAX = 256
 
 
+def _as_bool(value) -> bool:
+    """Accept True/False plus common JSON/query-string spellings."""
+    if isinstance(value, str):
+        return value.strip().lower() not in {"0", "false", "no", "off", ""}
+    return bool(value)
+
+
 class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
     """
     Heuristic Override Arena.
@@ -101,6 +108,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         self._ep_state = HOAState()
         self._bias_stats: Dict[str, Dict[str, float]] = {}  # Per-bias performance
         self._used_scenario_ids: set = set()  # Dedup within episode
+        self._hint = True  # include heuristic_signal in observations
 
     def _load_all(self) -> dict:
         """Load all scenarios from JSON files."""
@@ -199,6 +207,11 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
             if stats["total"] > 0
         }
 
+    def _public(self, scenario: dict) -> dict:
+        """Scenario as shown to the agent: never ground truth; hint only if enabled."""
+        hidden = {"ground_truth"} if self._hint else {"ground_truth", "heuristic_signal"}
+        return {k: v for k, v in scenario.items() if k not in hidden}
+
     def get_available_tasks(self) -> List[str]:
         """Return list of all available task types."""
         return list(self._scenarios.keys())
@@ -218,6 +231,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
             "current_scenario": self._current_scenario,
             "single_task": self._single_task,
             "difficulty": self._difficulty,
+            "hint": self._hint,
             "ep_state": self._ep_state.model_dump(),
             "bias_stats": self._bias_stats,
             "used_ids": sorted(self._used_scenario_ids),
@@ -234,6 +248,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         self._current_scenario = state.get("current_scenario")
         self._single_task = state.get("single_task")
         self._difficulty = state.get("difficulty")
+        self._hint = state.get("hint", True)
         self._bias_stats = state.get("bias_stats", {})
         ep_state = state.get("ep_state")
         if ep_state:
@@ -246,6 +261,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         episode_id: Optional[str] = None,
         task: Optional[str] = None,
         difficulty: Optional[str] = None,
+        hint: bool = True,
         **kwargs,
     ) -> HOAObservation:
         """
@@ -258,6 +274,8 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
                   If None, runs full 3-task episode with curriculum
             difficulty: Filter scenarios by difficulty ("easy", "medium", "hard")
                        Used with task=None for curriculum learning
+            hint: If False ("no-hint" mode), observations omit the scenario's
+                  heuristic_signal, so the agent must spot the trap itself.
 
         Returns:
             Initial observation with first scenario
@@ -266,6 +284,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
             random.seed(seed)
 
         self._difficulty = difficulty
+        self._hint = _as_bool(hint)
         all_tasks = TASK_ORDER + [t for t in EXTENDED_TASKS if t in self._scenarios]
 
         if task and task in all_tasks:
@@ -303,9 +322,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
         self._sync_to_http_state()
 
         # Return scenario WITHOUT ground_truth (hidden from agent)
-        public_scenario = {
-            k: v for k, v in self._current_scenario.items() if k != "ground_truth"
-        }
+        public_scenario = self._public(self._current_scenario)
 
         return HOAObservation(
             task_type=current_task,
@@ -392,9 +409,7 @@ class HOAEnvironment(Environment[HOAAction, HOAObservation, HOAState]):
             )
             self._used_scenario_ids.add(self._current_scenario.get("id"))
             self._ep_state.current_task = next_task
-            public_next = {
-                k: v for k, v in self._current_scenario.items() if k != "ground_truth"
-            }
+            public_next = self._public(self._current_scenario)
         else:
             next_task = "complete"
             public_next = {}

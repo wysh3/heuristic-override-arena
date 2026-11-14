@@ -18,6 +18,8 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME", "heuristic-override-arena")
 BENCHMARK = "heuristic-override-arena"
 SUCCESS_THRESHOLD = 0.5
+# HOA_HINT=0 runs the harder no-hint mode (heuristic_signal hidden from the agent)
+HINT = os.getenv("HOA_HINT", "1").strip().lower() not in {"0", "false", "no", "off"}
 
 TASKS = [
     "procurement",
@@ -192,7 +194,7 @@ async def run_task(task_name: str) -> float:
 
         # We will loop exactly until step == 3 or done=True
         env = await env_client.__aenter__()
-        result = await env.reset(seed=42, task=task_name)
+        result = await env.reset(seed=42, task=task_name, hint=HINT)
 
         while result and not result.done and step < 3:
             step += 1
@@ -255,7 +257,7 @@ async def run_task(task_name: str) -> float:
                     # Rebuild client and restart env silently to grab next scenario
                     env_client = HOAEnv(base_url=space_url)
                     env = await env_client.__aenter__()
-                    result = await env.reset(seed=step * 100, task=task_name)
+                    result = await env.reset(seed=step * 100, task=task_name, hint=HINT)
 
                     # Apply action to new connection
                     result = await env.step(action)

@@ -34,3 +34,10 @@ def test_http_reset_step_roundtrip():
     s = client.post("/step", json={"action": {"choice": gt["correct_choice"]}}).json()
     assert s["reward"] >= 0.6
     assert s["done"] is False
+
+
+def test_http_no_hint_mode():
+    r = client.post("/reset", json={"task": "hr_decision", "hint": False}).json()
+    assert "heuristic_signal" not in r["observation"]["scenario"]
+    s = client.post("/step", json={"action": {"choice": "A"}}).json()
+    assert "heuristic_signal" not in s["observation"]["scenario"]

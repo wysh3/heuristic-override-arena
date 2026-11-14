@@ -48,7 +48,7 @@ Correct:  A  (the constraint decides; price and uptime are irrelevant)
 | **Heuristic types** | 22 (severity 17, speed 15, experience 15, cost 12, performance 7, urgency 6, affinity 4, ... see `/tasks`) |
 | **Grading** | Deterministic keyword + choice grader with synonym expansion (`hoa_env/grader.py`) |
 | **Episodes** | Multi-step: 3 scenarios per episode, deduplicated within an episode |
-| **Modes** | single task · curriculum by `difficulty` · full 3-domain progression |
+| **Modes** | single task · curriculum by `difficulty` · full 3-domain progression · **no-hint** (`hint=false`) |
 | **Interfaces** | WebSocket (typed Python client) and plain HTTP |
 
 ## Reward
@@ -63,7 +63,7 @@ reward = 0.6·correct_choice + 0.2·constraint_match + 0.2·heuristic_match − 
 * Explanation credit is only given with the correct choice, and long keyword dumps are truncated, so stuffing keywords cannot rescue a wrong or random answer (a random choice with a keyword dump scores about 0.35, versus 0.30 for a random choice with no explanation).
 * `fell_for_trap` is 1 if the agent chose the designated trap option. A wrong answer therefore scores 0.
 * There is no per-step penalty; the reward does not depend on the step index.
-* The observation includes the scenario's `heuristic_signal` (a one-line description of the tempting cue). This is a deliberate hint: it makes the task about *overriding* the cue rather than discovering it.
+* By default the observation includes the scenario's `heuristic_signal` (a one-line description of the tempting cue). Pass `hint=false` to `reset` for **no-hint mode**: the cue is hidden and the agent has to spot the trap and name the heuristic itself.
 
 Episode `done` is true after 3 scenarios (single-task / curriculum modes) or after the 3-domain progression (`procurement → hr_decision → medical_triage`) when no task is given. Calling `step` after `done` starts a new episode.
 
@@ -109,7 +109,7 @@ from hoa_env import HOAAction, HOAEnv
 
 async def main():
     async with HOAEnv(base_url="https://wysh3-heuristic-override-arena.hf.space") as env:
-        result = await env.reset(task="procurement")      # or difficulty="easy"
+        result = await env.reset(task="procurement")      # or difficulty="easy"; hint=False for no-hint mode
         while not result.done:
             scenario = result.observation.scenario        # context, question, options, heuristic_signal
             result = await env.step(HOAAction(
@@ -145,7 +145,7 @@ export SPACE_URL=https://wysh3-heuristic-override-arena.hf.space   # or a local 
 export API_BASE_URL=https://router.huggingface.co/v1                # any OpenAI-compatible API
 export MODEL_NAME=Qwen/Qwen2.5-72B-Instruct   # or nvidia/nemotron-3-ultra-550b-a55b with the NVIDIA API
 export HF_TOKEN=...                                                  # key for that API
-uv run python inference.py
+uv run python inference.py                 # HOA_HINT=0 for no-hint mode
 ```
 
 It runs one episode per task and prints `[START]`, `[STEP]` and `[END]` lines.
@@ -169,7 +169,7 @@ uv run openenv validate .
 
 | Endpoint | Method | Description |
 |---|---|---|
-| `/reset` | POST | Start an episode. Optional body: `task`, `difficulty`, `seed`, `episode_id` |
+| `/reset` | POST | Start an episode. Optional body: `task`, `difficulty`, `hint` (default `true`), `seed`, `episode_id` |
 | `/step` | POST | Submit `{"action": {...}}` |
 | `/state` | GET | Current episode state |
 | `/info` | GET | Environment metadata (counts computed from the data) |
@@ -202,7 +202,7 @@ Append an object to a file in `scenarios/` with `id`, `context`, `question`, `op
 * Keyword grading rewards naming the expected terms; a correct explanation phrased with unlisted words earns less partial credit (the choice itself is graded exactly).
 * Scenarios are short and synthetic; they probe constraint-following, not domain expertise, and are not legal or medical advice.
 * Options are binary (A/B).
-* Ceiling effect: a 550B model answers every scenario correctly when the API responds (see *LLM baseline*). For a harder benchmark, hide `heuristic_signal` from the observation and add more than two options.
+* Ceiling effect: with the hint shown, a 550B model answers every scenario correctly when the API responds (see *LLM baseline*). Use no-hint mode for a harder benchmark.
 
 ## Team Z
 

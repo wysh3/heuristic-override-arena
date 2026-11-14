@@ -180,3 +180,21 @@ class TestRewardBounds:
             gt = env._current_scenario["ground_truth"]
             rewards.append(env.step(make_action(choice=gt["correct_choice"])).reward)
         assert len(set(rewards)) == 1
+
+
+class TestNoHintMode:
+    def test_hint_shown_by_default(self):
+        obs = HOAEnvironment().reset(seed=1, task="procurement")
+        assert "heuristic_signal" in obs.scenario
+
+    def test_hint_hidden_on_reset_and_steps(self):
+        env = HOAEnvironment()
+        obs = env.reset(seed=1, task="procurement", hint=False)
+        assert "heuristic_signal" not in obs.scenario
+        obs = env.step(make_action(choice="A"))
+        assert obs.scenario and "heuristic_signal" not in obs.scenario
+
+    def test_hint_flag_survives_http_bridge(self):
+        HOAEnvironment().reset(seed=1, task="procurement", hint="false")
+        obs = HOAEnvironment().step(make_action(choice="A"))
+        assert "heuristic_signal" not in obs.scenario

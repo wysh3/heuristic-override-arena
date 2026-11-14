@@ -17,6 +17,7 @@ description: >
   - Curriculum learning (easy → medium → hard progression)
   - Per-bias performance analytics
   - Multi-step episodes for stronger RL signal
+  - No-hint mode (reset with hint=false) hides the heuristic cue
 tags:
   - openenv
   - heuristic-override
@@ -70,7 +71,8 @@ action_space:
 observation_space:
   type: json
   description: >
-    task_type, scenario (context/question/options/heuristic_signal), 
+    task_type, scenario (context/question/options, plus heuristic_signal
+    unless reset with hint=false), 
     feedback, cumulative_reward, episode_score, trap_intensity
 curriculum:
   levels:

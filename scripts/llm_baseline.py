@@ -26,9 +26,12 @@ from hoa_env.models import HOAAction  # noqa: E402
 FILES = {**TASK_FILES, **EXTENDED_FILES}
 
 
+HIDDEN = {"ground_truth"}
+
+
 def evaluate(item):
     task, s = item
-    public = {k: v for k, v in s.items() if k != "ground_truth"}
+    public = {k: v for k, v in s.items() if k not in HIDDEN}
     out = inference.call_llm(public) or {}
     action = HOAAction(
         choice=str(out.get("choice", "")),
@@ -52,7 +55,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", default="")
+    ap.add_argument("--no-hint", action="store_true", help="hide heuristic_signal")
     args = ap.parse_args()
+    if args.no_hint:
+        HIDDEN.add("heuristic_signal")
 
     items = []
     for task, fname in FILES.items():
@@ -66,7 +72,7 @@ def main():
     for r in results:
         by_task[r["task"]].append(r)
 
-    print(f"model: {inference.MODEL_NAME}")
+    print(f"model: {inference.MODEL_NAME}  hint: {'off' if args.no_hint else 'on'}")
     print(f"{'task':<18}{'n':>4}{'accuracy':>10}{'reward':>9}{'trap':>8}{'errors':>8}")
     for task in list(FILES) + ["overall"]:
         rs = results if task == "overall" else by_task[task]
