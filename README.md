@@ -78,18 +78,22 @@ Computed in-process, deterministic, no LLM — reproduce with `uv run python scr
 | Random option | ~50% | ~0.30 | ~50% |
 | Always the trap | 0% | 0.000 | 100% |
 
-### LLM baseline (reported by the authors)
+### LLM baseline
 
-Zero-shot `nvidia/nemotron-3-super-120b-a12b` via the NVIDIA API (temperature 0.1), 3 runs against the deployed Space with `inference.py`, measured with an earlier version of the grader that applied a small per-step penalty. Treat these as indicative and re-run `inference.py` to refresh them.
+`nvidia/nemotron-3-ultra-550b-a55b` via the NVIDIA API, zero-shot, temperature 0.1, using the prompt in `inference.py`. 3 runs over **all 100 scenarios** with the current grader (`scripts/llm_baseline.py`), measured 2026-11-15:
 
-| Task | Avg score |
-|---|---|
-| procurement | 0.75 |
-| hr_decision | 0.88 |
-| medical_triage | 0.63 |
-| cognitive_biases | 0.73 |
-| edge_cases | 0.72 |
-| **Overall** | **0.74** |
+| Task | Accuracy | Avg reward (± sd over runs) | Trap rate |
+|---|---|---|---|
+| procurement | 100% | 0.834 ± 0.009 | 0% |
+| hr_decision | 100% | 0.834 ± 0.006 | 0% |
+| medical_triage | 93.3% | 0.775 ± 0.025 | 6.7% |
+| cognitive_biases | 100% | 0.795 ± 0.005 | 0% |
+| edge_cases | 100% | 0.837 ± 0.011 | 0% |
+| **Overall** | **98.3%** | **0.814 ± 0.009** | **1.7%** |
+
+All misses came from API calls that returned no answer (9 of 300) and were scored as the fallback answer `A`. **On every question it actually answered, the model chose correctly.** The remaining reward gap (about 0.19) is explanation credit: the model's wording didn't contain all of the expected keywords. An end-to-end `inference.py` run against the live Space with the same model scored 0.82.
+
+**What this means:** with the `heuristic_signal` hint in the observation, a frontier-size model is at ceiling on choice accuracy. The environment separates models on trap avoidance only for smaller models; for large models it measures explanation quality. See *Limitations*.
 
 No trained-model results are reported here.
 
@@ -139,7 +143,7 @@ curl -X POST https://wysh3-heuristic-override-arena.hf.space/step \
 ```bash
 export SPACE_URL=https://wysh3-heuristic-override-arena.hf.space   # or a local server
 export API_BASE_URL=https://router.huggingface.co/v1                # any OpenAI-compatible API
-export MODEL_NAME=Qwen/Qwen2.5-72B-Instruct
+export MODEL_NAME=Qwen/Qwen2.5-72B-Instruct   # or nvidia/nemotron-3-ultra-550b-a55b with the NVIDIA API
 export HF_TOKEN=...                                                  # key for that API
 uv run python inference.py
 ```
@@ -181,7 +185,8 @@ Action: `choice`, `constraint_identified`, `heuristic_identified`, `reasoning`. 
 ```
 hoa_env/            environment, grader, models, client, FastAPI app
 scenarios/          the 100 scenarios (JSON)
-scripts/baselines.py  deterministic reference baselines
+scripts/baselines.py     deterministic reference baselines
+scripts/llm_baseline.py  LLM evaluation over all 100 scenarios
 inference.py        LLM runner
 tests/              pytest suite
 openenv.yaml        OpenEnv manifest
@@ -197,6 +202,7 @@ Append an object to a file in `scenarios/` with `id`, `context`, `question`, `op
 * Keyword grading rewards naming the expected terms; a correct explanation phrased with unlisted words earns less partial credit (the choice itself is graded exactly).
 * Scenarios are short and synthetic; they probe constraint-following, not domain expertise, and are not legal or medical advice.
 * Options are binary (A/B).
+* Ceiling effect: a 550B model answers every scenario correctly when the API responds (see *LLM baseline*). For a harder benchmark, hide `heuristic_signal` from the observation and add more than two options.
 
 ## Team Z
 

@@ -63,9 +63,20 @@ def call_llm(scenario: dict) -> dict:
                     },
                 ],
                 temperature=0.1 + (attempt * 0.2),  # slightly more creative on retry
-                max_tokens=1024,
+                max_tokens=4096,  # reasoning models spend tokens thinking first
             )
-            raw = resp.choices[0].message.content.strip()
+            msg = resp.choices[0].message
+            raw = (msg.content or "").strip()
+            if not raw:
+                # Some reasoning models return the answer only in reasoning_content,
+                # or nothing at all if they ran out of tokens.
+                raw = (getattr(msg, "reasoning_content", None) or "").strip()
+                if "{" in raw:
+                    raw = raw[raw.rfind("{", 0, raw.rfind("choice")) :]
+            if not raw:
+                raise ValueError(
+                    f"empty response (finish_reason={resp.choices[0].finish_reason})"
+                )
             if "```" in raw:
                 for part in raw.split("```"):
                     part = part.strip().lstrip("json").strip()
@@ -199,7 +210,9 @@ async def run_task(task_name: str) -> float:
                     heuristic_identified=action_dict.get("heuristic_identified", ""),
                     reasoning=action_dict.get("reasoning", ""),
                 )
-                last_error = None
+                # call_llm returns a fallback action with an "error" key when the
+                # LLM call fails; surface it instead of reporting success.
+                last_error = action_dict.get("error")
             except Exception as e:
                 action = HOAAction(
                     choice="A", constraint_identified="", heuristic_identified=""
