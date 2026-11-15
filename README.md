@@ -45,7 +45,7 @@ Correct:  A  (the constraint decides; price and uptime are irrelevant)
 |---|---|
 | **Scenarios** | 100 hand-written decisions across 5 tasks |
 | **Tasks** | `procurement` (25, easy) · `hr_decision` (25, medium) · `medical_triage` (25, hard) · `cognitive_biases` (15, medium) · `edge_cases` (10, hard) |
-| **Heuristic types** | 22 (severity 17, speed 15, experience 15, cost 12, performance 7, urgency 6, affinity 4, ... see `/tasks`) |
+| **Heuristic types** | 22 (severity 17, speed 16, experience 15, cost 12, performance 7, urgency 5, affinity 4, ... see `/tasks`) |
 | **Grading** | Deterministic keyword + choice grader with synonym expansion (`hoa_env/grader.py`) |
 | **Episodes** | Multi-step: 3 scenarios per episode, deduplicated within an episode |
 | **Modes** | single task · curriculum by `difficulty` · full 3-domain progression · **no-hint** (`hint=false`) |
@@ -80,20 +80,27 @@ Computed in-process, deterministic, no LLM — reproduce with `uv run python scr
 
 ### LLM baseline
 
-`nvidia/nemotron-3-ultra-550b-a55b` via the NVIDIA API, zero-shot, temperature 0.1, using the prompt in `inference.py`. 3 runs over **all 100 scenarios** with the current grader (`scripts/llm_baseline.py`), measured 2026-11-15:
+Zero-shot, temperature 0.1, prompt from `inference.py`, NVIDIA API. 3 runs × all 100 scenarios per row with `scripts/llm_baseline.py`, measured 2026-11-15:
 
-| Task | Accuracy | Avg reward (± sd over runs) | Trap rate |
-|---|---|---|---|
-| procurement | 100% | 0.834 ± 0.009 | 0% |
-| hr_decision | 100% | 0.834 ± 0.006 | 0% |
-| medical_triage | 93.3% | 0.775 ± 0.025 | 6.7% |
-| cognitive_biases | 100% | 0.795 ± 0.005 | 0% |
-| edge_cases | 100% | 0.837 ± 0.011 | 0% |
-| **Overall** | **98.3%** | **0.814 ± 0.009** | **1.7%** |
+| Model | Hint | Accuracy | Avg reward (± sd) | Trap rate |
+|---|---|---|---|---|
+| `nvidia/nemotron-3-ultra-550b-a55b` | on | 99.3% | 0.824 ± 0.006 | 0.7% |
+| `nvidia/nemotron-3-ultra-550b-a55b` | **off** | 99.0% | 0.810 ± 0.001 | 1.0% |
+| `nvidia/nemotron-3.5-lightning-30b-a3b` | on | 99.0% | 0.817 ± 0.004 | 1.0% |
+| `nvidia/nemotron-3.5-lightning-30b-a3b` | **off** | 98.7% | 0.788 ± 0.011 | 1.3% |
 
-All misses came from API calls that returned no answer (9 of 300) and were scored as the fallback answer `A`. **On every question it actually answered, the model chose correctly.** The remaining reward gap (about 0.19) is explanation credit: the model's wording didn't contain all of the expected keywords. An end-to-end `inference.py` run against the live Space with the same model scored 0.82.
+The hardest task for both models was `medical_triage` (Ultra) or `cognitive_biases` (Lightning), at 93–97% accuracy. After these runs, the one scenario Ultra kept missing (`med_005`) turned out to have a clinically wrong answer key and was rewritten.
 
-**What this means:** with the `heuristic_signal` hint in the observation, a frontier-size model is at ceiling on choice accuracy. The environment separates models on trap avoidance only for smaller models; for large models it measures explanation quality. See *Limitations*.
+**What this means:** current open models of 30B parameters and up almost always pick the policy-compliant option, with or without the hint. Hiding the hint mainly lowers the *explanation* part of the reward (about −0.015 to −0.03), not accuracy. As a benchmark for these models the environment is close to saturated. Its remaining value is as a clean, deterministic RL environment and as a test for smaller models or for agents that drift toward shortcuts during training.
+
+#### Dataset audit
+
+Error analysis of the LLM runs turned up 19 scenarios with wrong or unfair answer keys, all now fixed:
+* 12 used a label-swap trick (option `A` described "Candidate B"). The entities now have neutral names.
+* 6 had a clinically or numerically wrong key: `med_001`, `med_005`, `med_009`, `med_015`, `med_017` and `bias_009`.
+* 1 (`hr_014`) relied on a rule the context never stated.
+
+Medical scenarios are simplified teaching cases, not clinical guidance.
 
 No trained-model results are reported here.
 
@@ -202,7 +209,7 @@ Append an object to a file in `scenarios/` with `id`, `context`, `question`, `op
 * Keyword grading rewards naming the expected terms; a correct explanation phrased with unlisted words earns less partial credit (the choice itself is graded exactly).
 * Scenarios are short and synthetic; they probe constraint-following, not domain expertise, and are not legal or medical advice.
 * Options are binary (A/B).
-* Ceiling effect: with the hint shown, a 550B model answers every scenario correctly when the API responds (see *LLM baseline*). Use no-hint mode for a harder benchmark.
+* Ceiling effect: 30B+ open models score about 99% accuracy with or without the hint (see *LLM baseline*). A harder benchmark would need new scenarios: buried or multi-step constraints, more than two options, or several interacting rules.
 
 ## Team Z
 

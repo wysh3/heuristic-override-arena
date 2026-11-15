@@ -127,35 +127,31 @@
   },
   {
     "id": "med_005",
-    "context": "A patient presents with anaphylaxis. Standard protocol calls for epinephrine injection immediately. The patient has a documented MAO inhibitor prescription on their medication list.",
+    "context": "A patient on the ward develops anaphylaxis. Hospital protocol: give epinephrine 0.5 mg of the 1 mg/mL solution intramuscularly into the outer thigh, repeat every 5 minutes if needed. Undiluted 1 mg/mL epinephrine must never be given as an IV bolus because it can cause fatal arrhythmias. The patient already has an IV line in place.",
     "question": "What is your immediate action?",
     "options": {
-      "A": "Administer epinephrine but with extreme caution at reduced dose, with physician immediately present",
-      "B": "Administer epinephrine immediately — anaphylaxis is life-threatening and epinephrine is first-line"
+      "A": "Give 0.5 mg of 1 mg/mL epinephrine IM into the thigh now, per protocol",
+      "B": "Push the 1 mg/mL epinephrine through the existing IV line — it will act faster"
     },
-    "heuristic_signal": "Anaphylaxis is immediately life-threatening — give epinephrine now",
+    "heuristic_signal": "An IV line is already in place and IV acts faster",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
-      "heuristic_type": "urgency",
+      "heuristic_type": "speed",
       "constraint_keywords": [
-        "MAO inhibitor",
-        "MAOI",
-        "interaction",
-        "hypertensive crisis",
-        "epinephrine"
+        "intramuscular",
+        "IM",
+        "protocol",
+        "IV bolus",
+        "arrhythmia"
       ],
       "heuristic_keywords": [
-        "standard protocol",
-        "life-threatening",
         "faster",
-        "quickly",
-        "immediately",
-        "urgent",
-        "immediate",
-        "first-line"
+        "IV line",
+        "already",
+        "speed"
       ],
-      "explanation": "MAO inhibitors have a dangerous interaction with epinephrine that can cause hypertensive crisis. While epinephrine is still required for anaphylaxis (the benefit outweighs the risk), the physician must be present and dosing adjusted. This is not a standard administration scenario."
+      "explanation": "Protocol is IM epinephrine for anaphylaxis. Undiluted 1 mg/mL epinephrine given as an IV bolus can cause fatal arrhythmias; the existing IV line does not change the route. IM epinephrine acts quickly and is the safe first-line treatment."
     },
     "trap_intensity": "hard"
   },
