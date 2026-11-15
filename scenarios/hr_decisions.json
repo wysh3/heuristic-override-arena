@@ -211,10 +211,10 @@
     "context": "You need to hire a licensed pharmacist for your hospital pharmacy. All pharmacists must have an active state pharmacy license. You have two candidates.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B — 4 years experience, general pharmacy, fully active and unrestricted license",
-      "B": "Candidate A — 15 years experience, specialized in oncology pharmacy, license currently under review for a minor administrative issue"
+      "A": "Dana — 4 years experience, general pharmacy, fully active and unrestricted license",
+      "B": "Sam — 15 years experience, specialized in oncology pharmacy, license currently under review for a minor administrative issue"
     },
-    "heuristic_signal": "Candidate A has vastly more experience and specialization",
+    "heuristic_signal": "Sam has vastly more experience and specialization",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -232,7 +232,7 @@
         "15 years",
         "oncology"
       ],
-      "explanation": "A pharmacist must have an active, unrestricted state license to practice. A license 'under review' is not active and cannot be used. Candidate A cannot legally practice until the review resolves, regardless of their experience."
+      "explanation": "A pharmacist must have an active, unrestricted state license to practice. A license 'under review' is not active. Sam cannot legally practice until the review resolves, regardless of experience."
     },
     "trap_intensity": "medium"
   },
@@ -383,7 +383,7 @@
   },
   {
     "id": "hr_014",
-    "context": "You are hiring a research assistant who will work with controlled substances. DEA regulations require anyone handling Schedule II controlled substances to have a completed background check and DEA authorization. The best candidate's background check is still processing.",
+    "context": "You are hiring a research assistant for a lab that handles Schedule II controlled substances. DEA regulations and facility policy require every employee with access to the lab, whatever their duties, to have a completed background check and DEA authorization before their first day. The best candidate's background check is still processing.",
     "question": "What do you do?",
     "options": {
       "A": "Wait until the background check and DEA authorization are fully complete before hiring",
@@ -406,7 +406,7 @@
         "should clear",
         "other work"
       ],
-      "explanation": "DEA regulations require completed background checks and authorization before any employment in roles with controlled substance access. The candidate cannot be hired — even for non-controlled work — until clearance is complete due to facility access requirements."
+      "explanation": "Facility policy and DEA rules require clearance before any employee starts in the lab, regardless of duties. Starting the candidate on other work would still give them access before clearance."
     },
     "trap_intensity": "medium"
   },

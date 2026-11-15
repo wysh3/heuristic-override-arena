@@ -255,11 +255,11 @@
   },
   {
     "id": "bias_009",
-    "context": "A project is 80% complete but hitting major blockers. Completing it requires $1M more and 6 months. Abandoning now loses the $4M already spent but saves future losses. Analysis shows completion will yield only $2M return (net -$3M loss). Policy requires minimizing losses.",
+    "context": "A project is 80% complete but hitting major blockers. Finishing it requires $1M more and 6 months. The $4M already spent cannot be recovered either way. Updated analysis shows the finished project will return only $0.4M. Policy requires minimizing total losses from this point forward.",
     "question": "What do you recommend?",
     "options": {
-      "A": "Abandon the project — save $1M future cost, accept $4M sunk cost",
-      "B": "Complete the project — we're already 80% done and spent $4M"
+      "A": "Abandon the project — avoid spending $1M to get back $0.4M",
+      "B": "Complete the project — we're already 80% done and have spent $4M"
     },
     "heuristic_signal": "We're already 80% complete and spent $4M",
     "trap_intensity": "hard",
@@ -282,7 +282,7 @@
         "complete",
         "invested"
       ],
-      "explanation": "Sunk cost fallacy: 80% completion is irrelevant. Completing costs $1M more for $2M return (-$3M net). Abandoning saves $1M."
+      "explanation": "Sunk cost fallacy: the $4M is gone whichever option is chosen, so only future cash flows matter. Finishing costs $1M to return $0.4M (a further $0.6M loss). Abandoning minimizes losses."
     }
   },
   {

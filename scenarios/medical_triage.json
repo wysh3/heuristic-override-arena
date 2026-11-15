@@ -254,13 +254,13 @@
   },
   {
     "id": "med_009",
-    "context": "A patient in acute pain needs morphine. Standard dosing is 2-5mg IV for moderate-severe pain. The patient's chart shows they are taking fluoxetine (SSRI) daily for depression.",
+    "context": "A patient in acute moderate pain has a standing order for tramadol 50-100mg, the ward's standard analgesic. The patient's chart shows they take fluoxetine (an SSRI) daily for depression.",
     "question": "What do you do?",
     "options": {
-      "A": "Administer morphine at reduced dose with close monitoring — SSRI interaction increases serotonin syndrome risk",
-      "B": "Administer standard morphine dose — the pain is severe and requires immediate relief"
+      "A": "Withhold tramadol and use a non-serotonergic analgesic — tramadol with an SSRI risks serotonin syndrome",
+      "B": "Give the standard tramadol dose — the pain needs immediate relief and it is the standard order"
     },
-    "heuristic_signal": "Severe pain requires immediate standard-dose morphine",
+    "heuristic_signal": "Pain needs immediate relief and tramadol is the standard order",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -270,7 +270,7 @@
         "serotonin syndrome",
         "interaction",
         "fluoxetine",
-        "monitoring"
+        "tramadol"
       ],
       "heuristic_keywords": [
         "standard dose",
@@ -280,7 +280,7 @@
         "urgent",
         "immediate"
       ],
-      "explanation": "Morphine combined with SSRIs can increase the risk of serotonin syndrome, a potentially fatal condition. While morphine can still be given, reduced dosing with close monitoring is required. Standard dosing protocols are modified when SSRIs are present."
+      "explanation": "Tramadol is serotonergic and fluoxetine also inhibits its metabolism; together they significantly raise the risk of serotonin syndrome and seizures. A non-serotonergic analgesic should be used instead."
     },
     "trap_intensity": "hard"
   },
@@ -437,20 +437,21 @@
   },
   {
     "id": "med_015",
-    "context": "A patient with severe cellulitis needs IV antibiotics. Standard therapy is ceftriaxone. The patient reports a history of 'penicillin allergy' but cannot recall the reaction — it was noted by a parent when they were a child.",
+    "context": "A patient with severe cellulitis needs IV antibiotics. Standard therapy is ceftriaxone. The chart documents anaphylaxis (throat swelling, hypotension, epinephrine given) after a dose of cefazolin, another cephalosporin, two years ago.",
     "question": "What do you do?",
     "options": {
-      "A": "Administer ceftriaxone — most reported penicillin allergies are not true IgE-mediated reactions",
-      "B": "Avoid ceftriaxone and use a non-beta-lactam alternative — documented allergy must be respected"
+      "A": "Administer ceftriaxone — it is standard therapy and most reported antibiotic allergies are not true allergies",
+      "B": "Avoid cephalosporins and use a non-beta-lactam alternative — documented anaphylaxis to a cephalosporin"
     },
-    "heuristic_signal": "Most penicillin allergies are not true allergies and ceftriaxone is standard therapy",
+    "heuristic_signal": "Most reported antibiotic allergies are not true allergies and ceftriaxone is standard therapy",
     "ground_truth": {
       "correct_choice": "B",
       "trap_choice": "A",
       "heuristic_type": "severity",
       "constraint_keywords": [
         "documented allergy",
-        "penicillin allergy",
+        "anaphylaxis",
+        "cephalosporin",
         "cross-reactivity",
         "beta-lactam"
       ],
@@ -459,7 +460,7 @@
         "not true",
         "standard therapy"
       ],
-      "explanation": "While many penicillin allergies are not true IgE reactions, ceftriaxone (a cephalosporin) has ~1-3% cross-reactivity with penicillin. Without knowing the type of reaction, documented allergy must be respected and a non-beta-lactam alternative used. Allergy testing can be done later if needed."
+      "explanation": "A documented, recent anaphylactic reaction to a cephalosporin is a true severe allergy. Giving another cephalosporin risks a repeat reaction; a non-beta-lactam alternative must be used regardless of what is standard therapy."
     },
     "trap_intensity": "hard"
   },
@@ -498,11 +499,11 @@
   },
   {
     "id": "med_017",
-    "context": "A patient with bacterial meningitis needs lumbar puncture. Standard protocol requires CT scan first only if there are signs of increased intracranial pressure. This patient has a severe headache but no focal neurological deficits.",
+    "context": "A patient with suspected bacterial meningitis needs a lumbar puncture. Protocol requires a CT scan before LP if there are any signs of raised intracranial pressure: papilledema, altered consciousness, focal deficits, or new seizures. The patient has no focal neurological deficits, but fundoscopy shows bilateral papilledema. Empiric antibiotics have already been given.",
     "question": "What do you do?",
     "options": {
-      "A": "Proceed with lumbar puncture immediately — no focal deficits mean low risk of herniation",
-      "B": "Get CT scan first — severe headache itself warrants imaging before LP in meningitis"
+      "A": "Proceed with lumbar puncture immediately — no focal deficits means low risk of herniation",
+      "B": "Get a CT scan before LP — papilledema is a sign of raised intracranial pressure"
     },
     "heuristic_signal": "No focal neurological signs means LP can proceed per protocol",
     "ground_truth": {
@@ -510,6 +511,7 @@
       "trap_choice": "A",
       "heuristic_type": "severity",
       "constraint_keywords": [
+        "papilledema",
         "increased ICP",
         "herniation",
         "imaging",
@@ -520,7 +522,7 @@
         "protocol",
         "low risk"
       ],
-      "explanation": "While absence of focal deficits is reassuring, severe headache in suspected meningitis can indicate increased intracranial pressure. Current guidelines recommend CT before LP if ANY signs suggest increased ICP (including severe headache). The risk of herniation outweighs the protocol shortcut."
+      "explanation": "Papilledema indicates raised intracranial pressure, which the protocol lists as an indication for CT before LP because of herniation risk. Absence of focal deficits does not override it, and antibiotics are already running, so the CT does not delay treatment."
     },
     "trap_intensity": "hard"
   },
