@@ -64,13 +64,13 @@
   },
   {
     "id": "edge_003",
-    "context": "Two vendors for critical infrastructure. Vendor A: Your best friend owns it, good pricing. Vendor B: No personal connection, slightly higher price but SOC 2 Type II certified. Policy requires SOC 2 Type II for critical infrastructure.",
+    "context": "Two vendors for critical infrastructure. Vendor Bluepeak: Your best friend owns it, good pricing. Vendor Northwind: No personal connection, slightly higher price but SOC 2 Type II certified. Policy requires SOC 2 Type II for critical infrastructure.",
     "question": "Which vendor do you select?",
     "options": {
-      "A": "Vendor B — no personal connection, slightly higher price, SOC 2 Type II certified",
-      "B": "Vendor A — friend's company, good price, no SOC 2 certification"
+      "A": "Vendor Northwind — no personal connection, slightly higher price, SOC 2 Type II certified",
+      "B": "Vendor Bluepeak — friend's company, good price, no SOC 2 certification"
     },
-    "heuristic_signal": "Your best friend owns Vendor A and offers good pricing",
+    "heuristic_signal": "Your best friend owns Vendor Bluepeak and offers good pricing",
     "trap_intensity": "hard",
     "ground_truth": {
       "correct_choice": "A",
@@ -91,7 +91,7 @@
         "owns",
         "relationship"
       ],
-      "explanation": "Conflict of interest: Personal relationships don't override certification requirements. Vendor A lacks required SOC 2 Type II certification."
+      "explanation": "Conflict of interest: Personal relationships don't override certification requirements. Vendor Bluepeak lacks required SOC 2 Type II certification."
     }
   },
   {
@@ -192,13 +192,13 @@
   },
   {
     "id": "edge_007",
-    "context": "Vendor selection under time pressure. Vendor A can start tomorrow but has no insurance or liability coverage. Vendor B needs 2 weeks but has full $10M liability coverage. Contract requires minimum $5M liability coverage.",
+    "context": "Vendor selection under time pressure. Vendor Bluepeak can start tomorrow but has no insurance or liability coverage. Vendor Northwind needs 2 weeks but has full $10M liability coverage. Contract requires minimum $5M liability coverage.",
     "question": "Which vendor do you contract?",
     "options": {
-      "A": "Vendor B — starts in 2 weeks, $10M liability coverage",
-      "B": "Vendor A — starts tomorrow, no liability coverage"
+      "A": "Vendor Northwind — starts in 2 weeks, $10M liability coverage",
+      "B": "Vendor Bluepeak — starts tomorrow, no liability coverage"
     },
-    "heuristic_signal": "We need to start immediately, Vendor A is ready",
+    "heuristic_signal": "We need to start immediately, Vendor Bluepeak is ready",
     "trap_intensity": "hard",
     "ground_truth": {
       "correct_choice": "A",
@@ -219,7 +219,7 @@
         "ready",
         "faster"
       ],
-      "explanation": "Speed bias: Immediate availability doesn't override contractual requirements. Vendor A lacks required $5M liability coverage."
+      "explanation": "Speed bias: Immediate availability doesn't override contractual requirements. Vendor Bluepeak lacks required $5M liability coverage."
     }
   },
   {

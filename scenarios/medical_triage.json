@@ -1,23 +1,23 @@
 [
   {
     "id": "med_001",
-    "context": "You are an ER nurse performing initial triage. A patient arrives with severe chest pain (potential MI) and reports they took the maximum dose of ibuprofen 30 minutes ago for a headache. Standard protocol for suspected MI includes administering aspirin immediately.",
+    "context": "You are an ER nurse performing initial triage. A patient arrives with severe chest pain (potential MI). Standard protocol for suspected MI includes giving aspirin immediately. The patient's chart and wristband document a true aspirin allergy: anaphylaxis requiring epinephrine three years ago.",
     "question": "What is your immediate action?",
     "options": {
-      "A": "Hold the aspirin and notify the physician immediately — the patient has already taken NSAIDs",
+      "A": "Hold the aspirin and notify the physician immediately — documented aspirin anaphylaxis",
       "B": "Administer aspirin immediately as per MI protocol — chest pain is the priority"
     },
-    "heuristic_signal": "Chest pain is severe and MI protocol says aspirin immediately",
+    "heuristic_signal": "Suspected MI and the protocol calls for immediate aspirin",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
       "heuristic_type": "severity",
       "constraint_keywords": [
-        "ibuprofen",
-        "NSAIDs",
-        "interaction",
-        "already taken",
-        "physician"
+        "aspirin allergy",
+        "anaphylaxis",
+        "contraindication",
+        "documented allergy",
+        "notify physician"
       ],
       "heuristic_keywords": [
         "immediate",
@@ -26,7 +26,7 @@
         "MI",
         "priority"
       ],
-      "explanation": "Ibuprofen (NSAID) taken within 2 hours can block aspirin's antiplatelet effects and worsen GI bleeding risk. The physician must be notified to assess the NSAID interaction before aspirin administration. Protocol steps are overridden by medication contraindication."
+      "explanation": "A documented anaphylactic reaction to aspirin is an absolute contraindication. The physician must be notified at once to choose an alternative antiplatelet strategy; the MI protocol step is overridden by the allergy."
     },
     "trap_intensity": "hard"
   },

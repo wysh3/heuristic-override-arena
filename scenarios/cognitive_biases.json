@@ -65,13 +65,13 @@
   },
   {
     "id": "bias_003",
-    "context": "You're hiring for a senior role. Candidate A interviewed yesterday and gave a memorable, charismatic presentation. Candidate B interviewed 3 weeks ago with solid but less flashy credentials. HR records show Candidate B has 2 more certifications and a stronger track record. Your policy requires hiring based on documented qualifications.",
+    "context": "You're hiring for a senior role. Riley interviewed yesterday and gave a memorable, charismatic presentation. Jordan interviewed 3 weeks ago with solid but less flashy credentials. HR records show Jordan has 2 more certifications and a stronger track record. Your policy requires hiring based on documented qualifications.",
     "question": "Who do you hire?",
     "options": {
-      "A": "Candidate B — interviewed 3 weeks ago, more certifications and stronger record",
-      "B": "Candidate A — memorable recent interview, fewer certifications"
+      "A": "Jordan — interviewed 3 weeks ago, more certifications and stronger record",
+      "B": "Riley — memorable recent interview, fewer certifications"
     },
-    "heuristic_signal": "Candidate A just interviewed and made a strong impression",
+    "heuristic_signal": "Riley just interviewed and made a strong impression",
     "trap_intensity": "medium",
     "ground_truth": {
       "correct_choice": "A",
@@ -92,7 +92,7 @@
         "impression",
         "just"
       ],
-      "explanation": "Recency bias: Recent memorable events overshadow objective data. Policy requires documented qualifications, which favor Candidate B."
+      "explanation": "Recency bias: Recent memorable events overshadow objective data. Policy requires documented qualifications, which favor Jordan."
     }
   },
   {
@@ -191,13 +191,13 @@
   },
   {
     "id": "bias_007",
-    "context": "Two candidates for a technical role: Candidate A graduated from MIT (your alma mater) with a 3.2 GPA. Candidate B graduated from a lesser-known school with a 3.9 GPA and published 3 papers in the field. Your hiring rubric scores technical achievement highest.",
+    "context": "Two candidates for a technical role: Casey graduated from MIT (your alma mater) with a 3.2 GPA. Morgan graduated from a lesser-known school with a 3.9 GPA and published 3 papers in the field. Your hiring rubric scores technical achievement highest.",
     "question": "Who do you advance to final round?",
     "options": {
-      "A": "Candidate B — lesser-known school, 3.9 GPA, 3 published papers",
-      "B": "Candidate A — MIT graduate (your alma mater), 3.2 GPA, no publications"
+      "A": "Morgan — lesser-known school, 3.9 GPA, 3 published papers",
+      "B": "Casey — MIT graduate (your alma mater), 3.2 GPA, no publications"
     },
-    "heuristic_signal": "Candidate A went to MIT, same as you",
+    "heuristic_signal": "Casey went to MIT, same as you",
     "trap_intensity": "medium",
     "ground_truth": {
       "correct_choice": "A",
@@ -218,7 +218,7 @@
         "school",
         "your"
       ],
-      "explanation": "Affinity/prestige bias: School name doesn't override technical achievement metrics. Candidate B has higher GPA and publications."
+      "explanation": "Affinity/prestige bias: School name doesn't override technical achievement metrics. Morgan has higher GPA and publications."
     }
   },
   {
@@ -319,13 +319,13 @@
   },
   {
     "id": "bias_011",
-    "context": "Your team just completed a successful product launch. Now evaluating the next project: Project A (similar to the success) or Project B (different but market analysis shows 3x larger opportunity). Strategy requires maximizing market opportunity.",
+    "context": "Your team just completed a successful product launch. Now evaluating the next project: Project Birch (similar to the success) or Project Atlas (different but market analysis shows 3x larger opportunity). Strategy requires maximizing market opportunity.",
     "question": "Which project do you pursue?",
     "options": {
-      "A": "Project B — different approach, 3x larger market opportunity",
-      "B": "Project A — similar to recent success, smaller market opportunity"
+      "A": "Project Atlas — different approach, 3x larger market opportunity",
+      "B": "Project Birch — similar to recent success, smaller market opportunity"
     },
-    "heuristic_signal": "Project A is similar to what just succeeded",
+    "heuristic_signal": "Project Birch is similar to what just succeeded",
     "trap_intensity": "medium",
     "ground_truth": {
       "correct_choice": "A",
@@ -346,7 +346,7 @@
         "just",
         "worked"
       ],
-      "explanation": "Recency/availability bias: Past success doesn't predict future performance. Market analysis shows Project B has 3x opportunity."
+      "explanation": "Recency/availability bias: Past success doesn't predict future performance. Market analysis shows Project Atlas has 3x opportunity."
     }
   },
   {
@@ -447,13 +447,13 @@
   },
   {
     "id": "bias_015",
-    "context": "Final decision between two strategic options. Option A: Your predecessor championed this, and reversing it might look like criticism. Option B: Analysis shows Option B delivers 2x returns, but requires reversing predecessor's decision. Board wants maximum returns.",
+    "context": "Final decision between two strategic options. Option Birch: Your predecessor championed this, and reversing it might look like criticism. Option Atlas: Analysis shows Option Atlas delivers 2x returns, but requires reversing predecessor's decision. Board wants maximum returns.",
     "question": "Which option do you recommend?",
     "options": {
-      "A": "Option B — 2x returns, requires reversing predecessor's choice",
-      "B": "Option A — predecessor's decision, avoiding perceived criticism"
+      "A": "Option Atlas — 2x returns, requires reversing predecessor's choice",
+      "B": "Option Birch — predecessor's decision, avoiding perceived criticism"
     },
-    "heuristic_signal": "Choosing Option B might look like criticizing your predecessor",
+    "heuristic_signal": "Choosing Option Atlas might look like criticizing your predecessor",
     "trap_intensity": "hard",
     "ground_truth": {
       "correct_choice": "A",
@@ -474,7 +474,7 @@
         "perception",
         "social"
       ],
-      "explanation": "Social pressure bias: Fear of perceived criticism shouldn't override fiduciary duty. Option B delivers 2x returns as required by board."
+      "explanation": "Social pressure bias: Fear of perceived criticism shouldn't override fiduciary duty. Option Atlas delivers 2x returns as required by board."
     }
   }
 ]

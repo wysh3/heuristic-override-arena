@@ -4,10 +4,10 @@
     "context": "You are hiring for a Senior Financial Analyst role. The position requires CFA (Chartered Financial Analyst) certification per the job description and internal HR policy for all senior finance roles. You have two finalists.",
     "question": "Which candidate do you advance to the offer stage?",
     "options": {
-      "A": "Candidate B — 6 years experience, state university MBA, CFA Level 3 certified",
-      "B": "Candidate A — 12 years experience, MBA from top school, no CFA certification"
+      "A": "Morgan — 6 years experience, state university MBA, CFA Level 3 certified",
+      "B": "Casey — 12 years experience, MBA from top school, no CFA certification"
     },
-    "heuristic_signal": "Candidate A has more experience and a more prestigious degree",
+    "heuristic_signal": "Casey has more experience and a more prestigious degree",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -25,7 +25,7 @@
         "top school",
         "senior"
       ],
-      "explanation": "HR policy requires CFA certification for all Senior Financial Analyst roles. Candidate A does not have this certification and cannot be hired for this position, regardless of experience or educational prestige."
+      "explanation": "HR policy requires CFA certification for all Senior Financial Analyst roles. Casey does not have this certification and cannot be hired for this position, regardless of experience or educational prestige."
     },
     "trap_intensity": "medium"
   },
@@ -64,10 +64,10 @@
     "context": "You are interviewing candidates for a security operations role that requires active US government Secret clearance. Both candidates are highly qualified technically.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B — 5 years in cybersecurity, fewer certifications, active Secret clearance",
-      "B": "Candidate A — 10 years in cybersecurity, multiple certifications, clearance expired 2 years ago"
+      "A": "Avery — 5 years in cybersecurity, fewer certifications, active Secret clearance",
+      "B": "Taylor — 10 years in cybersecurity, multiple certifications, clearance expired 2 years ago"
     },
-    "heuristic_signal": "Candidate A has far more experience and certifications",
+    "heuristic_signal": "Taylor has far more experience and certifications",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -84,7 +84,7 @@
         "more certifications",
         "senior"
       ],
-      "explanation": "The role requires active Secret clearance. Candidate A's expired clearance cannot be used — it requires a lengthy reinvestigation. Only Candidate B can legally perform classified work from day one."
+      "explanation": "The role requires active Secret clearance. Taylor's expired clearance cannot be used — it requires a lengthy reinvestigation. Only Avery can legally perform classified work from day one."
     },
     "trap_intensity": "medium"
   },
@@ -270,10 +270,10 @@
     "context": "You are hiring for a nurse practitioner role. State regulations require NPs to have an active collaborative agreement with a supervising physician before they can practice. One candidate is outstanding but their previous collaborative agreement expired last month.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B — 5 years NP experience, general practice, current active collaborative agreement",
-      "B": "Candidate A — 12 years NP experience, specialized training, collaborative agreement expired 1 month ago"
+      "A": "Quinn — 5 years NP experience, general practice, current active collaborative agreement",
+      "B": "Reese — 12 years NP experience, specialized training, collaborative agreement expired 1 month ago"
     },
-    "heuristic_signal": "Candidate A has much more experience and specialized training",
+    "heuristic_signal": "Reese has much more experience and specialized training",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -289,7 +289,7 @@
         "specialized",
         "12 years"
       ],
-      "explanation": "State regulations require an active collaborative agreement for NP practice. An expired agreement means Candidate A cannot legally practice until a new one is established, which can take weeks. Only Candidate B can start work immediately."
+      "explanation": "State regulations require an active collaborative agreement for NP practice. An expired agreement means Reese cannot legally practice until a new one is established, which can take weeks. Only Quinn can start work immediately."
     },
     "trap_intensity": "medium"
   },
@@ -561,10 +561,10 @@
     "context": "You are hiring a financial advisor. SEC regulations require all financial advisors to hold an active Series 65 license. The top candidate has extensive experience but their Series 65 license lapsed 6 months ago.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B — 5 years experience, developing client base, active Series 65 license",
-      "B": "Candidate A — 20 years experience, excellent client relationships, Series 65 lapsed 6 months ago"
+      "A": "Parker — 5 years experience, developing client base, active Series 65 license",
+      "B": "Rowan — 20 years experience, excellent client relationships, Series 65 lapsed 6 months ago"
     },
-    "heuristic_signal": "Candidate A has far more experience and established client relationships",
+    "heuristic_signal": "Rowan has far more experience and established client relationships",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -580,7 +580,7 @@
         "excellent relationships",
         "20 years"
       ],
-      "explanation": "SEC regulations require an active Series 65 license to work as a financial advisor. A lapsed license means Candidate A cannot legally provide advisory services until they retest and obtain a new license, regardless of their experience."
+      "explanation": "SEC regulations require an active Series 65 license to work as a financial advisor. A lapsed license means Rowan cannot legally provide advisory services until they retest and obtain a new license, regardless of their experience."
     },
     "trap_intensity": "medium"
   },
@@ -647,10 +647,10 @@
     "context": "You need to hire a construction supervisor. OSHA requires all construction supervisors to have completed the OSHA 30-hour construction safety course. Your most experienced candidate completed the 10-hour course but not the 30-hour course.",
     "question": "Which candidate do you hire?",
     "options": {
-      "A": "Candidate B — 8 years supervision experience, good safety record, completed OSHA 30-hour",
-      "B": "Candidate A — 20 years supervision experience, excellent safety record, completed OSHA 10-hour"
+      "A": "Jordan — 8 years supervision experience, good safety record, completed OSHA 30-hour",
+      "B": "Riley — 20 years supervision experience, excellent safety record, completed OSHA 10-hour"
     },
-    "heuristic_signal": "Candidate A has far more experience and a better safety record",
+    "heuristic_signal": "Riley has far more experience and a better safety record",
     "ground_truth": {
       "correct_choice": "A",
       "trap_choice": "B",
@@ -666,7 +666,7 @@
         "20 years",
         "excellent safety"
       ],
-      "explanation": "OSHA regulations require the 30-hour construction safety course for supervisors. The 10-hour course is insufficient. Candidate A cannot legally supervise construction without completing the 30-hour course regardless of their experience."
+      "explanation": "OSHA regulations require the 30-hour construction safety course for supervisors. The 10-hour course is insufficient. Riley cannot legally supervise construction without completing the 30-hour course regardless of their experience."
     },
     "trap_intensity": "medium"
   },
